@@ -36,7 +36,7 @@ This project helps answer questions like:
 
 - What is happening today?
 - What is coming up tomorrow?
-- What chores are active?
+- What chores need doing?
 - What has already been completed today?
 - What still needs attention?
 - Can household workflows be made easier without relying entirely on cloud apps?
