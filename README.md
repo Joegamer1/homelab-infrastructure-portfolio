@@ -284,30 +284,6 @@ Planned documentation sections:
 * `diagrams/README.md`
 * `screenshots/README.md`
 
-## Screenshot Policy
-
-Screenshots may be included only after review and redaction.
-
-Safe screenshots may include:
-
-* Homepage dashboard with private URLs, IPs, and personal labels blurred
-* Uptime Kuma status page with sensitive hostnames blurred
-* Home Assistant dashboard with personal names and calendar events blurred
-* Donetick dashboard with names and private task details blurred
-* Portainer container list with private ports, private IPs, and sensitive names reviewed
-* Proxmox VM list with private IPs and node names reviewed
-
-Screenshots should not include:
-
-* Tokens
-* Passwords
-* Email addresses
-* Calendar event details
-* Family names where avoidable
-* API keys
-* Public IP addresses
-* Private keys
-* Raw configuration files containing secrets
 
 ## Notes for Reviewers
 
