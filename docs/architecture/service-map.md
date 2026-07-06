@@ -62,6 +62,8 @@ Portainer provides visibility into Docker containers, images, networks, and volu
 
 It is used as an operational management tool rather than as the core architecture itself. Docker remains the underlying runtime.
 
+(this is a service I have not built out as much and plan to return to as my Docker architecture grows)
+
 ## Visibility and Monitoring Services
 
 ### Homepage
