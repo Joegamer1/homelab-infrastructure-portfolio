@@ -61,7 +61,7 @@ I chose this approach because it keeps the Proxmox host focused on virtualizatio
 
 Home Assistant OS runs as its own VM.
 
-I chose to keep Home Assistant separate from the general Docker stack because it acts more like a household operations platform than a normal containerized service. Keeping it isolated makes the setup easier to reason about and reduces coupling between home automation and the rest of the infrastructure stack.
+I chose to keep Home Assistant separate from the general Docker stack because it functions more like a household operations platform than a standard containerized service. Running it in its own VM keeps home automation isolated, simplifies maintenance, and reduces the chance that changes to other Docker services will affect household dashboards and automations.
 
 ## Current Services
 
