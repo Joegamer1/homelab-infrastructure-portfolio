@@ -1,21 +1,21 @@
 # Backup Plan
 
-This document describes the current backup approach for the homelab infrastructure environment.
+This document describes the current backup approach for my homelab.
 
-The goal of the backup process is to preserve important service configuration data, support recovery from service failure or host issues, and clearly separate implemented backup work from restore testing that still needs to be completed.
+The backup process is focused on preserving important configuration data so the environment is easier to recover, rebuild, or troubleshoot if something breaks. This is not a full disaster recovery plan yet, and I am intentionally documenting restore testing as planned work instead of pretending the backup process is fully proven.
 
 ## Backup Goals
 
-The backup strategy is intended to support:
+My current backup goals are:
 
-- Recovery of important Docker service configuration
-- Preservation of dashboard and infrastructure service settings
-- Recovery of selected service metadata
-- Faster rebuild of the Debian Docker VM service stack
-- Documentation of what is currently protected
-- Identification of restore testing as planned work
+- Preserve important Docker service configuration
+- Preserve selected infrastructure service settings
+- Capture useful Docker metadata
+- Make the Debian Docker VM service stack easier to rebuild
+- Avoid losing important dashboard, DNS, reverse proxy, and management configuration
+- Build toward a documented restore process
 
-This backup plan is focused on infrastructure and service configuration. It is not intended to be a full backup of all media data, databases, VM disks, or personal files.
+This backup plan is focused on infrastructure and service configuration. It is not intended to back up all media data, VM disks, databases, or personal files.
 
 ## Current Backup Scope
 
@@ -31,16 +31,13 @@ Current backup targets include configuration data for services such as:
 - Docker service metadata
 - Selected Docker configuration paths
 
-The backup scope is intentionally focused on configuration and operational recovery data rather than large media libraries or raw production data.
+The scope is intentionally practical. I care most about the configuration data that would make rebuilding the environment faster.
 
 ## Backup Storage
 
 Backups are generated outside this public repository.
 
-Backup files should not be committed to GitHub.
-
-Backup archives may contain sensitive configuration data, service metadata, hostnames, tokens, or environment-specific values. They should be treated as private operational artifacts.
-
+Backup archives may contain sensitive configuration data, service metadata, hostnames, tokens, or environment-specific values. They are private operational artifacts and should not be committed to GitHub.
 
 ## Backup Method
 
@@ -48,7 +45,15 @@ The current backup process uses a script-based approach.
 
 The script collects selected configuration paths and writes them into timestamped backup archives. It also records useful service metadata such as Docker container, network, and volume information where appropriate.
 
-This approach is useful because it preserves enough information to help rebuild or troubleshoot the environment without requiring a full image-level backup of every workload.
+This approach gives me a lightweight way to preserve important configuration data without needing to image every workload.
+
+## Why This Matters
+
+This homelab has grown past the point where I want to rely on memory alone.
+
+Homepage, Pi-hole, Nginx Proxy Manager, Portainer, and Uptime Kuma all represent time invested into configuration. If the Docker VM failed, I would rather have a recovery path than rebuild everything from scratch.
+
+The backup script is my first step toward making the environment more recoverable.
 
 ## Backup Validation Status
 
@@ -82,7 +87,7 @@ A future restore test should verify:
 
 ## Recovery Priorities
 
-In a recovery scenario, services should be restored based on operational importance.
+In a recovery scenario, I would restore services based on dependency and usefulness.
 
 Suggested recovery order:
 
@@ -122,6 +127,6 @@ Planned improvements include:
 
 ## Operational Summary
 
-The current backup approach provides a practical foundation for infrastructure recovery by preserving important configuration data and service metadata.
+The current backup approach gives me a practical starting point for recovery.
 
-The next major improvement is restore testing. Until restore testing is completed, the backup system should be treated as useful but not fully validated.
+It preserves important configuration data and helps reduce the risk of having to rebuild the environment entirely from memory. The next major improvement is restore testing. Until restore testing is completed, the backup process should be treated as useful but not fully validated.
