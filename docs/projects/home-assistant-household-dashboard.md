@@ -41,7 +41,7 @@ This project helps answer questions like:
 - What still needs attention?
 - Can household workflows be made easier without relying entirely on:
   
-  Cloud-hosted apps via 3rd parties
+  Cloud-hosted apps via 3rd parties OR 
   The classic note/list on the fridge
 
 ## Design Philosophy
