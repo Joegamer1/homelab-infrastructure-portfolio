@@ -39,7 +39,7 @@ This project helps answer questions like:
 - What chores need doing?
 - What has already been completed today?
 - What still needs attention?
-- Can household workflows be made easier without relying entirely on cloud apps?
+- Can household workflows be made easier without relying entirely on cloud-hosted apps via 3rd parties?
 
 ## Design Philosophy
 
