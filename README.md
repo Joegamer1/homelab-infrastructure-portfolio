@@ -1,88 +1,81 @@
-# Homelab Infrastructure Portfolio
+# Homelab Infrastructure Project
 
-This repository documents a real-world self-hosted homelab and household infrastructure environment built for practical systems administration, service hosting, monitoring, automation, and infrastructure operations.
+This repository documents my personal homelab and household infrastructure environment.
 
-The purpose of this project is to present the architecture, design decisions, operational practices, and lessons learned from maintaining a functional home infrastructure stack. This is not a dump of raw production configuration files. All examples are sanitized and written for documentation purposes.
+What started as a practical home server project has become a working infrastructure platform for self-hosted services, monitoring, private remote access, home automation, backups, and day-to-day household workflows. The environment supports real services that I use, maintain, troubleshoot, and improve over time.
+
+The goal of this repository is to present the project in a professional, portfolio-ready way while still keeping it grounded in the reality of my own homelab. This is not a generic best-practices checklist and it is not a dump of raw production configuration files. It is documentation of what I built, why I built it this way, what works well, and what I plan to improve next.
 
 This repository focuses on infrastructure and operations. Future cybersecurity-specific work, such as SIEM deployment, detection engineering, log analysis, attack simulation, and incident writeups, will be documented separately as a dedicated security lab project built on top of this environment.
 
-## Project Goals
+## Project Purpose
 
-This homelab is designed to demonstrate hands-on experience with:
+The purpose of this homelab is to build and operate a real infrastructure environment that is useful at home and valuable for career development.
 
-- Virtualization using Proxmox VE
+This project demonstrates hands-on experience with:
+
+- Proxmox VE virtualization
 - Linux server administration
 - Docker-based service hosting
 - Internal service monitoring
 - Private remote access
 - DNS and reverse proxy management
-- Home automation integration
+- Home automation
 - Backup planning
 - Infrastructure hardening
 - Operational documentation
+- Practical troubleshooting
 
-The goal is to show not just what services are running, but how the environment is organized, maintained, and improved over time.
+The most important part of this project is that it is real. These are not isolated lab exercises. The services documented here support actual household workflows and infrastructure needs.
 
 ## Environment Overview
 
 The environment is built around a Dell Precision T7820 workstation running Proxmox VE.
 
-Proxmox hosts multiple virtual machines, including:
+Proxmox provides the virtualization layer. It hosts multiple virtual machines, including:
 
-- A Debian Docker VM used as the primary service host
+- A Debian Docker VM used as the main service host
 - A Home Assistant OS VM used for household automation and dashboarding
 
-The Debian Docker VM runs most self-hosted services, including dashboards, monitoring, DNS, reverse proxy management, media services, and Donetick.
+The Debian Docker VM runs most of the self-hosted services in the environment, including dashboards, monitoring, DNS, reverse proxy management, media services, and Donetick.
 
-Home Assistant provides the household automation layer, including dashboard views, Google Calendar integration, and Donetick-backed chore workflows.
+Home Assistant provides the household automation layer. It integrates with Google Calendar and Donetick to support family dashboard views, recurring chores, task visibility, and household coordination.
 
 ## Core Infrastructure
 
-### Virtualization
+### Proxmox VE
 
-- **Proxmox VE**
-  - Primary virtualization platform
-  - Hosts infrastructure and automation workloads
-  - Provides separation between service roles
+Proxmox VE is the foundation of the environment.
 
-- **Debian Docker VM**
-  - Main container host
-  - Runs the majority of self-hosted applications
-  - Used for infrastructure, monitoring, media, and household service workloads
+I use it to separate major workloads into virtual machines instead of running everything directly on one operating system. This gives the homelab cleaner boundaries and makes it easier to expand over time.
 
-- **Home Assistant OS VM**
-  - Dedicated home automation VM
-  - Runs Home Assistant separately from the general Docker service stack
+### Debian Docker VM
 
-### Infrastructure Services
+The Debian Docker VM is the primary service host.
 
-- **Docker**
-  - Container runtime for self-hosted services
+It runs the majority of the Docker-based applications in the environment, including infrastructure services, dashboards, monitoring tools, media services, and Donetick.
 
-- **Portainer**
-  - Docker management and service visibility
+I chose this approach because it keeps the Proxmox host focused on virtualization while giving Docker services their own dedicated Linux environment.
 
-- **Homepage**
-  - Central launchpad for homelab services
-  - Organized into Core Infrastructure, Home, Docker Services, and Media Stack sections
+### Home Assistant OS VM
 
-- **Uptime Kuma**
-  - Service monitoring and status visibility
+Home Assistant OS runs as its own VM.
 
-- **Pi-hole**
-  - Internal DNS and ad-blocking
+I chose to keep Home Assistant separate from the general Docker stack because it acts more like a household operations platform than a normal containerized service. Keeping it isolated makes the setup easier to reason about and reduces coupling between home automation and the rest of the infrastructure stack.
 
-- **Nginx Proxy Manager**
-  - Reverse proxy management layer
+## Current Services
 
-- **Tailscale**
-  - Private remote access to infrastructure services
+### Infrastructure and Operations
 
-## Media Stack
+- Docker
+- Portainer
+- Homepage
+- Uptime Kuma
+- Pi-hole
+- Nginx Proxy Manager
+- Tailscale
 
-The media stack is documented as an example of Docker-based service orchestration and internal service management.
-
-Current services include:
+### Media Stack
 
 - Plex
 - Seerr
@@ -91,24 +84,29 @@ Current services include:
 - Prowlarr
 - SABnzbd
 
-This repository does not include private media data, credentials, claim tokens, indexer credentials, or production service configuration.
+### Home Automation and Household Operations
 
-## Home Automation Stack
-
-Home Assistant is used as the household automation and dashboard layer.
-
-Current functionality includes:
-
-- Home Assistant OS running in a Proxmox VM
+- Home Assistant OS
 - Google Calendar integration
+- Donetick
+- Home Assistant chore dashboard
+- Donetick-backed chore completion notifications
+
+## Home Assistant and Household Workflows
+
+One of the most useful parts of this environment is the Home Assistant dashboard work.
+
+The current setup includes:
+
 - Family dashboard views
+- Google Calendar visibility
 - Donetick integration
-- Chore status visibility
+- Active chore tracking
 - Completed-today chore summaries
 - Daily and weekly chore creation workflows
-- Donetick-backed completion notifications
+- Donetick completion notifications
 
-Donetick runs as a self-hosted Docker service and acts as the recurring chore backend.
+This part of the project matters to me because it turns the homelab into something useful beyond the server rack. It is not just infrastructure for infrastructure’s sake. It supports real household coordination and gives me a platform to keep improving automation over time.
 
 ## Architecture Summary
 
@@ -135,9 +133,9 @@ At a high level, the environment is organized into four layers:
    - Homepage for centralized service navigation
    - Uptime Kuma for service health visibility
 
-The design separates infrastructure hosting from home automation while still allowing the two layers to communicate through controlled service integrations.
+This structure keeps the environment understandable as it grows.
 
-## Current Completed Work
+## Completed Work
 
 Completed work includes:
 
@@ -145,7 +143,7 @@ Completed work includes:
 - Debian Docker VM created as the primary service host
 - Docker service stack deployed
 - Portainer configured for Docker visibility
-- Homepage deployed and organized
+- Homepage deployed and organized into useful service sections
 - Uptime Kuma deployed for service monitoring
 - Pi-hole deployed for DNS and ad-blocking
 - Nginx Proxy Manager deployed as a reverse proxy layer
@@ -212,56 +210,28 @@ This project demonstrates practical experience with:
 - Operational documentation
 - Security-conscious system design
 
-## Repository Structure
+## Documentation
 
-```text
-docs/
-  architecture/
-    overview.md
-    service-map.md
+Current documentation includes:
 
-  operations/
-    backup-plan.md
-    maintenance-checklist.md
-    restore-notes.md
+- `docs/architecture/overview.md`
+- `docs/architecture/service-map.md`
+- `docs/security/security-model.md`
+- `docs/operations/backup-plan.md`
+- `examples/README.md`
 
-  security/
-    security-model.md
-    remote-access.md
-    hardening-roadmap.md
+Planned documentation includes:
 
-  career/
-    project-summary.md
+- `docs/operations/maintenance-notes.md`
+- `docs/operations/restore-notes.md`
+- `docs/security/remote-access.md`
+- `docs/security/hardening-roadmap.md`
+- `docs/career/project-summary.md`
 
-examples/
-  README.md
-  homepage/
-  donetick/
-  home-assistant/
-  backups/
+## Notes for Reviewers
 
-diagrams/
+This project is a living homelab. Some areas are complete and actively used, while others are planned improvements.
 
-screenshots/
-Documentation Status
+The value of this project is not simply that it runs a list of tools. The value is in how the pieces fit together: virtualization, Linux administration, Docker operations, monitoring, private remote access, home automation, backup planning, and practical documentation.
 
-Current documentation:
-
-docs/architecture/overview.md
-docs/architecture/service-map.md
-examples/README.md
-
-Planned documentation:
-
-docs/operations/backup-plan.md
-docs/operations/maintenance-checklist.md
-docs/operations/restore-notes.md
-docs/security/security-model.md
-docs/security/remote-access.md
-docs/security/hardening-roadmap.md
-docs/career/project-summary.md
-Notes for Reviewers
-
-This project is a living infrastructure lab. Some services are fully implemented, while others are documented as planned improvements.
-
-The value of this project is not simply that it runs a list of tools. The value is in the integration of virtualization, Linux administration, Docker operations, monitoring, private remote access, home automation, backup planning, and clear operational documentation into one working environment.
+This is the infrastructure foundation I plan to keep building on.
