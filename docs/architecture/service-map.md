@@ -1,8 +1,8 @@
 # Service Map
 
-This document maps the major services in the homelab environment by role, hosting location, purpose, and operational importance.
+This document maps the major services in my homelab by role, hosting location, purpose, and operational importance.
 
-The goal of this document is to show how the environment is organized and how each service contributes to the overall infrastructure.
+The goal is to show how the environment is organized and how each service contributes to the overall system.
 
 ## Service Overview
 
@@ -31,61 +31,59 @@ The goal of this document is to show how the environment is organized and how ea
 
 ### Proxmox VE
 
-Proxmox VE is the virtualization platform for the environment.
+Proxmox VE is the foundation of the homelab.
 
-It provides:
+It provides the virtualization layer and allows me to separate workloads into VMs. This is important because I do not want every service tied directly to one operating system or one application stack.
+
+Proxmox gives me:
 
 - VM hosting
 - Resource allocation
 - Workload separation
-- Infrastructure management
-
-Proxmox is the foundation of the homelab. Most major services run either directly or indirectly on workloads hosted by Proxmox.
+- A central infrastructure management point
 
 ### Debian Docker VM
 
-The Debian Docker VM is the primary service host.
+The Debian Docker VM is where most of the self-hosted services live.
 
-It provides a dedicated Linux environment for running Docker-based services without placing those services directly on the Proxmox host.
+I use this VM as the main Docker host because it keeps the Proxmox host clean and gives containerized services their own dedicated Linux environment.
 
-This improves separation between the virtualization layer and the application hosting layer.
+If this VM is down, many services are affected, so it is one of the highest-priority systems in the environment.
 
 ### Docker
 
-Docker is used to run most self-hosted applications.
+Docker is the container runtime for most services.
 
-Containerizing services makes the environment easier to organize, update, back up, and document.
+Using Docker makes it easier to deploy, update, organize, and eventually document services. It also lets me group applications by purpose while keeping them separated from the base operating system.
 
 ### Portainer
 
-Portainer provides visibility into Docker containers, images, networks, and volumes.
+Portainer gives me a management view into Docker.
 
-It is used as an operational management tool rather than as the core architecture itself. Docker remains the underlying runtime.
-
-(this is a service I have not built out as much and plan to return to as my Docker architecture grows)
+I use it for visibility into containers, images, networks, and volumes. It is useful for day-to-day management, but Docker itself remains the underlying runtime.
 
 ## Visibility and Monitoring Services
 
 ### Homepage
 
-Homepage acts as the central launchpad for the environment.
+Homepage is the central launchpad for the homelab.
 
-It organizes services into functional sections, including:
+This is one of the services that makes the environment feel polished and usable. Instead of remembering every service URL, I can organize everything into sections such as:
 
 - Core Infrastructure
 - Home
 - Docker Services
 - Media Stack
 
-Homepage improves usability by making services easier to find and navigate.
+Homepage now includes links and visibility for services like Home Assistant, Donetick, Donetick Docker metrics, and Tailscale Machines.
 
 ### Uptime Kuma
 
 Uptime Kuma provides service health monitoring.
 
-It is used to track whether important services are reachable and responding as expected.
+I use it to quickly see whether important services are reachable. This gives me a simple status view without having to manually check every service.
 
-This provides quick operational visibility without manually checking each service.
+It is not a full monitoring platform yet, but it gives the environment a much better operational baseline.
 
 ## Network and Access Services
 
@@ -93,29 +91,29 @@ This provides quick operational visibility without manually checking each servic
 
 Pi-hole provides DNS and ad-blocking capabilities.
 
-In this environment, Pi-hole supports internal name resolution and network-level filtering.
+In my environment, Pi-hole supports internal name resolution and network-level filtering. It is part of making the homelab feel more integrated instead of just being a group of services accessed by IP address.
 
 ### Nginx Proxy Manager
 
 Nginx Proxy Manager provides a reverse proxy management layer.
 
-It is used where proxying or cleaner service access patterns are useful.
+I use it where cleaner service access patterns are useful. It gives me practice managing reverse proxy concepts without manually writing every Nginx config from scratch.
 
 ### Tailscale
 
-Tailscale provides private remote access to the environment.
+Tailscale provides private remote access.
 
-The primary goal is to avoid exposing administrative interfaces directly to the public internet.
+This is one of the most important design choices in the environment. I want to be able to reach my services remotely without exposing administrative dashboards directly to the public internet.
 
-Tailscale allows access to internal services through an authenticated private mesh network.
+Tailscale gives me a practical private access path for management.
 
 ## Home Automation Services
 
 ### Home Assistant OS
 
-Home Assistant OS runs as a dedicated VM.
+Home Assistant OS is the household automation platform.
 
-It provides household automation, dashboarding, and service integrations.
+It runs separately from the Docker VM because it has become its own major part of the environment. It supports dashboards, calendar visibility, chore workflows, and future automation ideas.
 
 Current use cases include:
 
@@ -123,19 +121,20 @@ Current use cases include:
 - Google Calendar visibility
 - Donetick chore integration
 - Daily and weekly chore workflows
-- Household status summaries
+- Completed-today chore summaries
+- Household status visibility
 
 ### Donetick
 
-Donetick runs in Docker and provides recurring chore management.
+Donetick provides recurring chore management.
 
-It acts as the chore backend, while Home Assistant provides the dashboard and automation layer around it.
+It runs in Docker, while Home Assistant provides the dashboard and automation layer around it. This combination gives me a self-hosted household task system that can grow over time.
 
 ### Google Calendar Integration
 
-Google Calendar is integrated with Home Assistant to surface household scheduling information.
+Google Calendar is integrated with Home Assistant.
 
-This allows calendar data to appear alongside other household dashboard information.
+This allows household scheduling information to appear alongside other dashboard data. It is one of the pieces that makes Home Assistant useful as a family-facing dashboard rather than just a technical control panel.
 
 ## Media Services
 
@@ -149,7 +148,7 @@ It is part of the Docker-hosted media stack.
 
 Seerr provides a media request frontend.
 
-It supports a cleaner request workflow for media services.
+It supports a cleaner request workflow for the media stack.
 
 ### Radarr
 
@@ -161,7 +160,7 @@ Sonarr manages TV automation.
 
 ### Prowlarr
 
-Prowlarr manages indexer configuration and coordination.
+Prowlarr manages indexer coordination.
 
 ### SABnzbd
 
@@ -182,9 +181,9 @@ The environment is organized into these main service groups:
 
 ## Dependency Notes
 
-Several services depend on the Debian Docker VM because it acts as the main service host.
+The Debian Docker VM is the main dependency for most self-hosted services.
 
-If the Debian Docker VM is offline, the following services are affected:
+If the Debian Docker VM is offline, these services are affected:
 
 - Homepage
 - Uptime Kuma
@@ -199,19 +198,12 @@ If the Debian Docker VM is offline, the following services are affected:
 - SABnzbd
 - Donetick
 
-If Home Assistant OS is offline, home automation dashboards and integrations are affected, but the general Docker service stack can continue running.
+If Home Assistant OS is offline, household dashboards and automations are affected, but the general Docker service stack can continue running.
 
 If Proxmox is offline, all VM-hosted workloads are affected.
 
-## Operational Notes
+## What This Map Helps With
 
-This service layout creates clear operational boundaries:
+This service map helps me quickly understand what depends on what.
 
-- Proxmox handles virtualization
-- Debian handles Docker-hosted services
-- Home Assistant handles automation
-- Tailscale handles private remote access
-- Uptime Kuma handles health visibility
-- Homepage handles service navigation
-
-This makes the environment easier to troubleshoot because each service has a defined role.
+It also makes the project easier to explain to someone reviewing the repo. Instead of just saying I run a bunch of containers, this document shows the role each service plays in the environment.
