@@ -40,8 +40,8 @@ This project helps answer questions like:
 - What has already been completed today?
 - What still needs attention?
 - Can household workflows be made easier without relying entirely on:
--     cloud-hosted apps via 3rd parties
--     The classic note/list on the fridge
+      Cloud-hosted apps via 3rd parties
+      The classic note/list on the fridge
 
 ## Design Philosophy
 
