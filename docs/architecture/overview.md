@@ -1,66 +1,48 @@
 # Architecture Overview
 
-This document provides a high-level overview of the homelab infrastructure architecture, including the virtualization layer, primary service host, home automation environment, and supporting services.
+This document explains how my homelab is structured and why I organized it this way.
 
-## Purpose
+The environment is built to be useful, understandable, and expandable. It supports real services I use at home while also giving me a strong platform for learning infrastructure, operations, automation, and eventually more advanced security lab work.
 
-The purpose of this environment is to provide a practical self-hosted infrastructure platform for learning, household operations, automation, monitoring, and service management.
+## Architecture Goals
 
-The environment is designed to demonstrate:
+The main goals for this architecture are:
 
-- Virtualization and VM lifecycle management
-- Linux server administration
-- Docker-based service hosting
-- Service monitoring and health visibility
-- Private remote access
-- Internal DNS and reverse proxy management
-- Home automation integration
-- Backup planning
-- Incremental infrastructure hardening
+- Keep the Proxmox host focused on virtualization
+- Use a dedicated Debian VM for Docker-based services
+- Keep Home Assistant separate from the general Docker stack
+- Use private remote access instead of exposing management interfaces publicly
+- Make service health visible through monitoring
+- Keep the environment documented enough that I can troubleshoot and improve it over time
+- Build a foundation that can later support a dedicated cybersecurity lab
 
-## Design Goals
-
-The architecture is built around several practical goals:
-
-1. **Separation of workloads**
-   - Core infrastructure services and home automation services are separated into different virtual machines where appropriate.
-
-2. **Private access by default**
-   - Administrative services are intended to be accessed through private network paths instead of direct public exposure.
-
-3. **Operational visibility**
-   - Dashboards and monitoring tools provide quick visibility into service health and availability.
-
-4. **Maintainability**
-   - Services are grouped by function, making the environment easier to understand, maintain, and expand.
-
-5. **Career-useful documentation**
-   - The environment is documented in a way that demonstrates infrastructure thinking, not just tool installation.
+This is not meant to be an enterprise design copied into a home environment. It is my practical infrastructure design for a real homelab.
 
 ## Physical Host
 
-The environment is built on a Dell Precision T7820 workstation running Proxmox VE.
+The environment runs on a Dell Precision T7820 workstation.
 
-The physical host provides compute, storage, and virtualization resources for the environment. Running Proxmox on dedicated workstation hardware allows multiple services to be separated into virtual machines instead of being installed directly on one operating system.
+The T7820 gives me enough room to run multiple workloads while keeping everything centralized on one physical host. It is the base of the homelab and runs Proxmox VE as the virtualization platform.
 
 ## Virtualization Layer
 
 Proxmox VE is the virtualization layer.
 
-Current major virtual machines include:
+I use Proxmox because it gives me clean separation between workloads and makes the environment easier to expand. Instead of installing every service directly on one operating system, I can separate major roles into virtual machines.
+
+Current major VMs include:
 
 - Debian Docker VM
 - Home Assistant OS VM
 
-This separation allows the primary service stack and home automation platform to be managed independently.
+This separation makes the environment easier to understand and maintain.
 
 ## Debian Docker VM
 
-The Debian Docker VM is the primary service host for containerized applications.
+The Debian Docker VM is the main service host.
 
-It hosts services including:
+Most of the self-hosted applications run here in Docker. This includes:
 
-- Docker
 - Portainer
 - Homepage
 - Uptime Kuma
@@ -74,66 +56,71 @@ It hosts services including:
 - SABnzbd
 - Donetick
 
-The Debian VM acts as the operational core for self-hosted infrastructure services.
+I chose this model because it keeps Docker workloads off the Proxmox host while still giving me one central place to manage most services.
+
+The Debian VM is one of the most important systems in the environment. If it is down, many of the hosted services are down with it.
 
 ## Home Assistant OS VM
 
-Home Assistant OS runs as a dedicated VM in Proxmox.
+Home Assistant OS runs as a dedicated VM.
 
-Home Assistant is used for household automation and dashboarding, including:
+I chose to keep Home Assistant separate because it is becoming the household operations layer of the environment. It is not just another container to me. It manages dashboards, calendar visibility, chore workflows, and future automation ideas.
+
+Current Home Assistant use cases include:
 
 - Family dashboard views
 - Google Calendar integration
 - Donetick chore integration
-- Chore status visibility
+- Active chore visibility
 - Completed-today summaries
-- Chore creation workflows
+- Daily and weekly chore creation workflows
 - Automation-backed notifications
 
-Keeping Home Assistant in its own VM reduces coupling between the home automation layer and the general Docker service stack.
+Keeping Home Assistant in its own VM makes it easier to treat as a dedicated platform.
 
-## Service Layers
+## Logical Service Layers
 
-The environment can be understood as several logical layers.
+The environment can be understood in several layers.
 
-### Virtualization Layer
+### Physical and Virtualization Layer
 
+- Dell Precision T7820
 - Proxmox VE
 - Debian Docker VM
 - Home Assistant OS VM
 
-This layer provides workload isolation and resource management.
+This layer provides the foundation for the rest of the environment.
 
 ### Service Hosting Layer
 
+- Debian Linux
 - Docker
 - Portainer
-- Debian Linux
 
-This layer hosts the majority of self-hosted applications.
+This layer runs most of the containerized services.
 
 ### Visibility Layer
 
 - Homepage
 - Uptime Kuma
 
-This layer provides service navigation, uptime checks, and basic operational awareness.
+This layer helps me quickly see what is running, what is reachable, and where to access services.
 
-### Network Services Layer
+### Network and Access Layer
 
 - Pi-hole
 - Nginx Proxy Manager
 - Tailscale
 
-This layer supports DNS, reverse proxy management, and private remote access.
+This layer supports internal DNS, reverse proxy management, and private remote access.
 
-### Home Automation Layer
+### Household Operations Layer
 
 - Home Assistant
+- Donetick
 - Google Calendar integration
-- Donetick integration
 
-This layer supports household dashboarding and recurring workflow automation.
+This layer is where the homelab becomes useful for day-to-day household coordination.
 
 ### Media Services Layer
 
@@ -144,75 +131,74 @@ This layer supports household dashboarding and recurring workflow automation.
 - Prowlarr
 - SABnzbd
 
-This layer supports media service management and request workflows.
+This layer supports media hosting and media management workflows.
 
 ## Remote Access Model
 
 Remote access is handled through Tailscale.
 
-The design goal is to avoid exposing administrative interfaces directly to the public internet. Management services are intended to remain reachable through private network paths rather than public port forwarding.
+I use Tailscale because I want remote access to my environment without exposing administrative dashboards directly to the public internet.
 
-This allows remote access while reducing the attack surface of the environment.
+The goal is simple: if I need to manage the homelab remotely, I want to come in through a private access path instead of opening unnecessary public ports.
 
 ## Monitoring Model
 
-Uptime Kuma provides service health monitoring and status visibility.
+Uptime Kuma provides service monitoring.
 
-Homepage provides a central dashboard for launching and viewing services, including selected Docker metrics and organized service sections.
+Homepage provides a central dashboard for navigating services and viewing selected service information.
 
-The monitoring approach is intended to make service state visible without requiring direct inspection of every container or VM.
+Together, these tools give me basic operational awareness. I can quickly see whether important services are reachable without manually checking every container or VM.
+
+This is not a full observability stack yet, but it is a practical starting point.
 
 ## DNS and Reverse Proxy Model
 
-Pi-hole provides internal DNS and ad-blocking capabilities.
+Pi-hole provides DNS and ad-blocking capabilities.
 
-Nginx Proxy Manager provides a reverse proxy management layer for services where proxying is useful.
+Nginx Proxy Manager provides a reverse proxy management layer.
 
-The environment separates internal name resolution, reverse proxy management, and private remote access so each layer has a clear role.
+In my environment, these services help make self-hosted applications easier to access and organize. They also give me more practice managing internal service access patterns.
 
 ## Backup Approach
 
 A backup script exists for selected Docker and infrastructure configuration paths.
 
-The backup process is intended to preserve important service configuration data, but restore testing is still planned. Until restore testing is completed, the backup process should be considered implemented but not fully validated.
+The current backup work is focused on preserving important configuration data rather than backing up every large file or media directory.
+
+Restore testing is still planned. Until I complete restore testing, I consider the backup process implemented but not fully proven.
 
 ## Security Approach
 
-The environment follows a private-by-default approach.
+The environment follows a private-by-default mindset.
 
 Current security-related work includes:
 
 - SSH hardening
-- Private remote access using Tailscale
-- Avoidance of public exposure for management interfaces
+- Tailscale private remote access
+- Avoiding public exposure for administrative services
 - Sanitized public documentation
-- Separation of completed work from planned work
+- Clear separation between completed and planned work
 
 Planned security improvements include:
 
 - UFW/firewall hardening
 - Restore testing
-- More formal hardening documentation
-- Improved monitoring and alerting
-- Security-focused lab work in a separate future repository
+- More complete hardening documentation
+- Better monitoring and alerting
+- A separate future cybersecurity lab project
 
-## Design Rationale
+## Why This Design Works for Me
 
-This architecture was chosen to balance practicality, learning value, and operational reliability.
+This architecture works because it keeps the environment understandable.
 
-Key design decisions include:
+Proxmox handles virtualization. Debian handles Docker services. Home Assistant handles household automation. Tailscale handles private remote access. Uptime Kuma handles service health visibility. Homepage ties the experience together as a launchpad.
 
-- Using Proxmox for workload separation
-- Using a Debian Docker VM as the main service host
-- Running Home Assistant OS separately from the Docker service stack
-- Using Tailscale for private remote access
-- Using Homepage and Uptime Kuma for visibility
-- Keeping public documentation sanitized and architecture-focused
+That separation makes troubleshooting easier and gives the homelab room to grow.
 
 ## Current Status
 
 The environment is functional and actively maintained.
 
-Completed work includes virtualization setup, Docker service hosting, service monitoring, Home Assistant deployment, Donetick integration, dashboarding, backup scripting, and SSH hardening.
+The core infrastructure is running, the service stack is useful, Home Assistant is integrated into household workflows, and the documentation is now being built into a public portfolio.
 
-UFW/firewall hardening, restore testing, and formal diagrams are planned future improvements.
+The next major improvements are firewall hardening, restore testing, stronger monitoring, and more polished diagrams.
