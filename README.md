@@ -219,11 +219,11 @@ Current documentation includes:
 - `docs/security/security-model.md`
 - `docs/operations/backup-plan.md`
 - `examples/README.md`
+- `docs/operations/maintenance-notes.md`
+- `docs/operations/restore-notes.md`
 
 Planned documentation includes:
 
-- `docs/operations/maintenance-notes.md`
-- `docs/operations/restore-notes.md`
 - `docs/security/remote-access.md`
 - `docs/security/hardening-roadmap.md`
 - `docs/career/project-summary.md`
