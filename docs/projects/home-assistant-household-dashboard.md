@@ -50,7 +50,7 @@ The design is meant to be practical, visible, and spouse/family-friendly.
 
 Home Assistant is the dashboard and automation layer. Donetick is the self-hosted chore backend. Google Calendar provides household schedule visibility.
 
-The goal is not to automate everything just because I can. The goal is to create simple workflows that are actually useful.
+The goal is not to automate everything for the sake of automation. The goal is to create simple workflows that are actually useful.
 
 Important design principles:
 
