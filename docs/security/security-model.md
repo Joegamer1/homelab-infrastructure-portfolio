@@ -1,26 +1,29 @@
 # Security Model
 
-This document describes the current security model for the homelab infrastructure environment.
+This document describes the current security model for my homelab.
 
-The goal is to document how the environment reduces exposure, separates responsibilities, and tracks future hardening work. This is not intended to represent the environment as enterprise-grade or fully hardened. It is a practical home infrastructure environment with security improvements applied incrementally.
+This is not an enterprise network, but I still want the management plane to stay private, the attack surface to stay limited, and the documentation to be honest about what is complete versus what is planned.
 
 ## Security Goals
 
-The current security goals are:
+My current security goals are:
 
 - Keep administrative services private where possible
 - Avoid unnecessary public exposure
-- Use private remote access for management
+- Use Tailscale for private remote access
 - Separate major workloads by role
-- Document completed hardening honestly
-- Track planned hardening separately from completed work
-- Avoid publishing secrets or production configuration in public documentation
+- Harden obvious administrative access paths
+- Document completed security work honestly
+- Track planned improvements separately from completed work
+- Keep public documentation sanitized
+
+The goal is practical risk reduction, not pretending the homelab is a fully mature enterprise environment.
 
 ## Current Security Posture
 
-The environment currently uses a private-by-default approach.
+The environment currently follows a private-by-default approach.
 
-Administrative access is intended to occur through trusted paths such as local network access or Tailscale rather than direct public exposure.
+Most administrative access is intended to happen through either the local network or Tailscale. I do not want management dashboards exposed directly to the public internet unless there is a specific reason and I understand the risk.
 
 Current security-related controls include:
 
@@ -31,7 +34,7 @@ Current security-related controls include:
 - SSH hardening
 - Limited public exposure
 - Sanitized public documentation
-- Separation of completed work from planned work
+- Clear separation between completed and planned work
 
 ## Workload Separation
 
@@ -39,22 +42,15 @@ The environment separates major service roles across virtual machines.
 
 ### Proxmox VE
 
-Proxmox provides the virtualization layer and hosts the major workloads.
+Proxmox provides the virtualization layer.
 
-Its role is to provide:
-
-- VM hosting
-- Resource allocation
-- Workload separation
-- Infrastructure management
-
-Management access to Proxmox should remain private.
+Its role is to host and manage the major workloads. Management access to Proxmox should remain private.
 
 ### Debian Docker VM
 
 The Debian Docker VM hosts most containerized services.
 
-This keeps application services separate from the Proxmox host and provides a dedicated Linux environment for Docker workloads.
+This keeps application services separate from the Proxmox host and gives Docker workloads their own dedicated Linux environment.
 
 Services hosted on this VM include:
 
@@ -68,28 +64,30 @@ Services hosted on this VM include:
 
 ### Home Assistant OS VM
 
-Home Assistant OS runs separately from the main Docker service stack.
+Home Assistant OS runs separately from the Docker service stack.
 
-This separation reduces coupling between household automation workflows and general infrastructure services.
+This separation matters because Home Assistant is becoming the household operations platform. I want it isolated enough that changes to the media or infrastructure service stack do not directly tangle with home automation.
 
 ## Remote Access
 
 Remote access is handled through Tailscale.
 
-The purpose of Tailscale in this environment is to provide private access to services without exposing management interfaces directly to the public internet.
+This is one of the most important security decisions in the environment. Tailscale lets me access internal services remotely without exposing administrative dashboards directly to the public internet.
 
 Remote access principles:
 
 - Prefer Tailscale for administrative access
-- Avoid public exposure of management dashboards
-- Keep Proxmox, Portainer, Home Assistant, and monitoring interfaces private
-- Use public exposure only where specifically required and understood
+- Keep Proxmox private
+- Keep Portainer private
+- Keep Home Assistant administrative access private
+- Keep monitoring and DNS admin interfaces private
+- Review any public exposure carefully
 
 ## Public Exposure
 
 The environment is designed to minimize public exposure.
 
-Most services should remain reachable only through:
+Most services should be reachable only through:
 
 - Local network access
 - Tailscale private access
@@ -115,13 +113,12 @@ Any service exposure should be reviewed based on need, authentication, update st
 
 SSH hardening has been completed on the Debian Docker VM.
 
-The goal of SSH hardening is to reduce unnecessary access risk and avoid weak administrative patterns.
+The goal was to reduce unnecessary administrative access risk and avoid weak default patterns.
 
 Completed SSH hardening work includes:
 
 - Root SSH login disabled
 - SSH access restricted to the intended administrative user
-- Password and remote access behavior reviewed
 - Administrative access kept private where practical
 
 Future SSH improvements may include:
@@ -135,61 +132,26 @@ Future SSH improvements may include:
 
 UFW/firewall hardening is planned work.
 
-It should not be represented as completed until implemented and tested.
+This should not be represented as completed until it is implemented and tested.
 
-The planned firewall model should define allowed access by source and service role.
+The future firewall model should define allowed access by source and service role.
 
-Expected future firewall goals include:
+Expected firewall goals include:
 
 - Allow trusted LAN access where required
 - Allow Tailscale access for management
 - Limit unnecessary inbound traffic
 - Keep Docker service exposure intentional
 - Document allowed ports and service purpose
-- Test before and after firewall changes
-
-Firewall hardening will be documented separately in a future hardening roadmap or UFW planning document.
-
-## Secrets Handling
-
-This public repository does not store production secrets.
-
-The following should not be committed:
-
-- API tokens
-- Passwords
-- Private keys
-- `.env` files
-- Home Assistant `secrets.yaml`
-- Donetick API tokens
-- Plex claim tokens
-- Tailscale auth keys
-- Cloudflare tokens
-- Personal calendar data
-- Raw production configuration files
-
-Example files should use placeholders such as:
-
-- `CHANGEME`
-- `LOCAL_IP`
-- `SERVICE_URL`
-- `API_TOKEN_HERE`
-- `HOME_ASSISTANT_URL`
-- `DONETICK_HOST`
+- Test access before and after firewall changes
 
 ## Backup Security
 
 A backup script exists for selected Docker and infrastructure configuration paths.
 
-Backup security considerations include:
+Backups may contain sensitive operational data, so they are treated as private artifacts and are not stored in this public repository.
 
-- Backups may contain sensitive configuration data
-- Backups should not be committed to this repository
-- Backup files should be stored outside the public repo
-- Restore testing is still planned
-- Backup access should be limited to trusted users and systems
-
-Until restore testing is completed, backups should be considered implemented but not fully validated.
+Restore testing is still planned. Until restore testing is completed, backups should be considered implemented but not fully validated.
 
 ## Monitoring and Visibility
 
@@ -197,9 +159,9 @@ Uptime Kuma provides service health monitoring.
 
 Homepage provides centralized service visibility and navigation.
 
-These tools help identify service outages and improve operational awareness, but they are not a replacement for security monitoring or SIEM-style logging.
+These tools help me understand whether services are reachable, but they are not a replacement for security monitoring or SIEM-style logging.
 
-Future cybersecurity monitoring work will be handled in a separate dedicated security lab project.
+That kind of cybersecurity monitoring will be handled in a separate future security lab project.
 
 ## Documentation Security
 
@@ -214,13 +176,7 @@ Public documentation should describe:
 - Sanitized examples
 - Planned improvements
 
-Public documentation should not expose:
-
-- Secrets
-- Private operational data
-- Sensitive screenshots
-- Raw production configs
-- Personal household details
+It should not expose secrets, private operational data, sensitive screenshots, raw production configs, or personal household details.
 
 ## Current Completed Security Work
 
@@ -238,21 +194,23 @@ Planned improvements include:
 
 - UFW/firewall hardening
 - Restore testing
-- More formal network/service access documentation
-- More complete hardening checklist
+- More formal network and service access documentation
+- More complete hardening notes
 - Improved monitoring and alerting
 - Dedicated cybersecurity lab project using this infrastructure as the foundation
 
 ## Security Design Summary
 
-The current security model is based on practical risk reduction:
+The current security model is based on practical risk reduction.
+
+My current approach is:
 
 - Keep management private
 - Separate workloads by role
 - Avoid unnecessary public exposure
 - Use Tailscale for remote access
 - Harden SSH access
-- Document what is completed versus planned
+- Document what is complete versus planned
 - Keep public documentation sanitized
 
-This approach provides a solid operational foundation while leaving room for future hardening and dedicated cybersecurity lab work.
+This gives the homelab a solid operational foundation while leaving room for future hardening and dedicated cybersecurity lab work.
