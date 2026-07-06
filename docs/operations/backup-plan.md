@@ -41,24 +41,6 @@ Backup files should not be committed to GitHub.
 
 Backup archives may contain sensitive configuration data, service metadata, hostnames, tokens, or environment-specific values. They should be treated as private operational artifacts.
 
-## Repository Exclusions
-
-This repository should not store:
-
-- Backup archives
-- Raw Docker volumes
-- Application databases
-- `.env` files
-- API tokens
-- Passwords
-- Private keys
-- Home Assistant secrets
-- Donetick API tokens
-- Plex claim tokens
-- Tailscale auth keys
-- Production configuration directories
-
-Only sanitized examples and documentation should be committed.
 
 ## Backup Method
 
