@@ -1,10 +1,10 @@
 # Architecture Overview
 
-This document provides a high-level overview of the homelab infrastructure architecture, including the virtualization layer, primary service host, home automation environment, and major supporting services.
+This document provides a high-level overview of the homelab infrastructure architecture, including the virtualization layer, primary service host, home automation environment, and supporting services.
 
 ## Purpose
 
-The purpose of this environment is to provide a practical, self-hosted infrastructure platform for learning, household operations, automation, monitoring, and service management.
+The purpose of this environment is to provide a practical self-hosted infrastructure platform for learning, household operations, automation, monitoring, and service management.
 
 The environment is designed to demonstrate:
 
@@ -15,29 +15,48 @@ The environment is designed to demonstrate:
 - Private remote access
 - Internal DNS and reverse proxy management
 - Home automation integration
-- Backup planning and operational documentation
+- Backup planning
 - Incremental infrastructure hardening
+
+## Design Goals
+
+The architecture is built around several practical goals:
+
+1. **Separation of workloads**
+   - Core infrastructure services and home automation services are separated into different virtual machines where appropriate.
+
+2. **Private access by default**
+   - Administrative services are intended to be accessed through private network paths instead of direct public exposure.
+
+3. **Operational visibility**
+   - Dashboards and monitoring tools provide quick visibility into service health and availability.
+
+4. **Maintainability**
+   - Services are grouped by function, making the environment easier to understand, maintain, and expand.
+
+5. **Career-useful documentation**
+   - The environment is documented in a way that demonstrates infrastructure thinking, not just tool installation.
 
 ## Physical Host
 
 The environment is built on a Dell Precision T7820 workstation running Proxmox VE.
 
-Proxmox provides the core virtualization layer and allows services to be separated into dedicated virtual machines instead of running everything directly on one bare-metal operating system.
+The physical host provides compute, storage, and virtualization resources for the environment. Running Proxmox on dedicated workstation hardware allows multiple services to be separated into virtual machines instead of being installed directly on one operating system.
 
 ## Virtualization Layer
 
-Proxmox VE is used to host the main infrastructure workloads.
+Proxmox VE is the virtualization layer.
 
 Current major virtual machines include:
 
 - Debian Docker VM
 - Home Assistant OS VM
 
-This separation allows the infrastructure service stack and home automation platform to be managed independently.
+This separation allows the primary service stack and home automation platform to be managed independently.
 
 ## Debian Docker VM
 
-The Debian Docker VM is the primary service host for most containerized applications.
+The Debian Docker VM is the primary service host for containerized applications.
 
 It hosts services including:
 
@@ -55,7 +74,7 @@ It hosts services including:
 - SABnzbd
 - Donetick
 
-The Debian VM acts as the operational core for self-hosted services.
+The Debian VM acts as the operational core for self-hosted infrastructure services.
 
 ## Home Assistant OS VM
 
@@ -73,28 +92,50 @@ Home Assistant is used for household automation and dashboarding, including:
 
 Keeping Home Assistant in its own VM reduces coupling between the home automation layer and the general Docker service stack.
 
-## Service Organization
+## Service Layers
 
-Services are organized into functional groups.
+The environment can be understood as several logical layers.
 
-### Core Infrastructure
+### Virtualization Layer
 
 - Proxmox VE
 - Debian Docker VM
+- Home Assistant OS VM
+
+This layer provides workload isolation and resource management.
+
+### Service Hosting Layer
+
+- Docker
 - Portainer
+- Debian Linux
+
+This layer hosts the majority of self-hosted applications.
+
+### Visibility Layer
+
 - Homepage
 - Uptime Kuma
+
+This layer provides service navigation, uptime checks, and basic operational awareness.
+
+### Network Services Layer
+
 - Pi-hole
 - Nginx Proxy Manager
 - Tailscale
 
-### Home Services
+This layer supports DNS, reverse proxy management, and private remote access.
+
+### Home Automation Layer
 
 - Home Assistant
-- Donetick
 - Google Calendar integration
+- Donetick integration
 
-### Media Services
+This layer supports household dashboarding and recurring workflow automation.
+
+### Media Services Layer
 
 - Plex
 - Seerr
@@ -103,11 +144,15 @@ Services are organized into functional groups.
 - Prowlarr
 - SABnzbd
 
+This layer supports media service management and request workflows.
+
 ## Remote Access Model
 
 Remote access is handled through Tailscale.
 
 The design goal is to avoid exposing administrative interfaces directly to the public internet. Management services are intended to remain reachable through private network paths rather than public port forwarding.
+
+This allows remote access while reducing the attack surface of the environment.
 
 ## Monitoring Model
 
@@ -127,9 +172,9 @@ The environment separates internal name resolution, reverse proxy management, an
 
 ## Backup Approach
 
-A backup script exists for selected Docker and infrastructure configuration paths, including important service configuration locations.
+A backup script exists for selected Docker and infrastructure configuration paths.
 
-Restore testing is planned work and should be completed before the backup process is considered fully validated.
+The backup process is intended to preserve important service configuration data, but restore testing is still planned. Until restore testing is completed, the backup process should be considered implemented but not fully validated.
 
 ## Security Approach
 
