@@ -154,7 +154,7 @@ The selected dropdown value becomes part of the calendar event title.
 
 Example:
 
-Samantha Work - Coordinating
+Samantha Work - Managing
 
 The Work Week markdown display removes the Samantha Work - prefix and displays the shift type cleanly.
 
