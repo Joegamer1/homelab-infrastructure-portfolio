@@ -21,7 +21,11 @@ The repo is organized so the core infrastructure story stays easy to follow whil
 
 ## Projects
 
-- [`projects/home-assistant-work-week/`](projects/home-assistant-work-week/) — Home Assistant Work Week dashboard for household schedule visibility
+- [`projects/README.md`](projects/README.md) — project index
+- [`projects/home-assistant-work-week/`](projects/home-assistant-work-week/) — Work Week dashboard
+- [`projects/home-assistant-chores/`](projects/home-assistant-chores/) — chores dashboard
+- [`projects/house-brain-hermes/`](projects/house-brain-hermes/) — local assistant layer
+- [`projects/homepage-dashboard/`](projects/homepage-dashboard/) — Homepage launchpad organization
 
 ## Documentation Standard
 
