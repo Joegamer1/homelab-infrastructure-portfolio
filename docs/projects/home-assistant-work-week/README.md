@@ -167,9 +167,9 @@ Deleting or Editing Shifts
 Samantha
 
 Samantha’s shifts are stored in:
-
+```
 calendar.samantha_work
-
+```
 Deleting or editing a Samantha shift is currently handled through the Home Assistant Calendar interface:
 
 Open the Samantha Work calendar.
@@ -184,11 +184,11 @@ Joe
 Joe’s schedule is treated as read-only because Deputy is the source of truth.
 
 Joe’s work events come from:
-
+```
 calendar.deputy_calendar_for_joe_belcher
-
+```
 Any corrections to Joe’s schedule should be made in Deputy rather than Home Assistant.
-
+```
 Files
 configuration.yaml
 dashboard-card.yaml
@@ -196,7 +196,7 @@ scripts.yaml
 helpers.md
 screenshots/
 Notes
-
+```
 The default Home Assistant calendar card still splits overnight events visually. This project intentionally avoids depending on that card for the Work Week display.
 
 The calendar remains the storage layer. The Work Week dashboard is the human-friendly interface.
