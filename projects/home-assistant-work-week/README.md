@@ -1,4 +1,3 @@
-projects/home-assistant-work-week/README.md
 # Home Assistant Work Week Dashboard
 
 This project documents a custom Home Assistant Work Week dashboard for displaying household work schedules in a cleaner format than the default Home Assistant calendar card.
@@ -20,25 +19,31 @@ This dashboard solves that by using calendar-backed template sensors and markdow
 
 ## Architecture
 
+### Joe’s schedule flow
+
 ```text
 Joe Deputy Calendar
-        ↓
+  ↓
 Home Assistant calendar.get_events
-        ↓
+  ↓
 sensor.joe_work_week
-        ↓
+  ↓
 Work Week markdown card
+
+
 Samantha Work Week form
-        ↓
+  ↓
 script.add_samantha_shift
-        ↓
+  ↓
 calendar.samantha_work
-        ↓
+  ↓
 Home Assistant calendar.get_events
-        ↓
+  ↓
 sensor.samantha_work_week
-        ↓
+  ↓
 Work Week markdown card
+
+```
 Key Entities
 Calendars
 calendar.deputy_calendar_for_joe_belcher
