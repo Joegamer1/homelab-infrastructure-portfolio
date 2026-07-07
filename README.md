@@ -212,15 +212,24 @@ This project demonstrates practical experience with:
 
 ## Documentation
 
+Start here:
+
+- `docs/README.md`
+- `docs/projects/README.md`
+
 Current documentation includes:
 
 - `docs/architecture/overview.md`
 - `docs/architecture/service-map.md`
 - `docs/security/security-model.md`
 - `docs/operations/backup-plan.md`
-- `examples/README.md`
 - `docs/operations/maintenance-notes.md`
 - `docs/operations/restore-notes.md`
+- `docs/projects/home-assistant-work-week/README.md`
+- `docs/projects/home-assistant-chores/README.md`
+- `docs/projects/house-brain-hermes/README.md`
+- `docs/projects/homepage-dashboard/README.md`
+- `examples/README.md`
 
 Planned documentation includes:
 
