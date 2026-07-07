@@ -273,8 +273,10 @@ For overnight shifts, the end date should be set to the following day.
 
 Example:
 
+```
 Start: Tuesday 3:45 PM
 End: Wednesday 12:45 AM
+
 input_text.samantha_shift_notes
 
 Optional notes field for Samantha’s shift.
@@ -283,13 +285,18 @@ Used by:
 
 script.add_samantha_shift
 
+```
+
 If the notes field is empty, unavailable, unknown, or blank, the script does not add notes to the calendar event description.
 
 If notes are present, they are added to the calendar event description.
 
 Example:
 
+``` text
 Notes: Closing shift
+```
+
 Calendar Entities
 calendar.samantha_work
 
