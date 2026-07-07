@@ -13,3 +13,24 @@ cards:
       ## {{ state_attr('sensor.samantha_work_week', 'week_label') }}
 
       {{ state_attr('sensor.samantha_work_week', 'markdown') }}
+
+  - type: markdown
+    content: |
+      ## Add Samantha Shift
+
+  - type: entities
+    entities:
+      - entity: input_select.samantha_shift_location
+        name: Location
+      - entity: input_datetime.samantha_shift_start
+        name: Shift Start
+      - entity: input_datetime.samantha_shift_end
+        name: Shift End
+      - entity: input_text.samantha_shift_notes
+        name: Optional Shift Notes
+
+  - type: tile
+    entity: script.add_samantha_shift
+    name: Add Samantha Shift
+    icon: mdi:calendar-plus
+    hide_state: true
