@@ -1,0 +1,15 @@
+type: vertical-stack
+cards:
+  - type: markdown
+    title: Joe Work Schedule
+    content: |
+      ## {{ state_attr('sensor.joe_work_week', 'week_label') }}
+
+      {{ state_attr('sensor.joe_work_week', 'markdown') }}
+
+  - type: markdown
+    title: Samantha Work Schedule
+    content: |
+      ## {{ state_attr('sensor.samantha_work_week', 'week_label') }}
+
+      {{ state_attr('sensor.samantha_work_week', 'markdown') }}
