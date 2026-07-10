@@ -1,75 +1,48 @@
-# Homelab Infrastructure Project
+# Homelab Infrastructure Portfolio
 
 This repository documents my personal homelab and household infrastructure environment.
 
-What started as a practical home server project has become a working infrastructure platform for self-hosted services, monitoring, private remote access, home automation, backups, media services, and day-to-day household workflows. The environment supports real services that I use, maintain, troubleshoot, and improve over time.
+What started as a traditional home server and media project has grown into a working infrastructure and household operations platform. It now supports self-hosted services, monitoring, private remote access, media delivery, family scheduling, recurring chores, dashboards, backups, and ongoing automation work.
 
-The goal of this repository is to present the project in a professional, portfolio-ready way while keeping it grounded in my actual environment. This is not a generic best-practices checklist and it is not a dump of raw production configuration files. It documents what I built, why I built it this way, where the first approach failed, and how I improved it.
+The purpose of this repository is not to present a perfect lab or a generic installation guide. It documents what I built, why the architecture changed, where early approaches failed, how I isolated problems, how I validated fixes, and what remains incomplete.
 
-This repository focuses on infrastructure and operations. Future cybersecurity-specific work, such as SIEM deployment, detection engineering, log analysis, attack simulation, and incident writeups, will be documented separately as a dedicated security lab project built on top of this environment.
+## Project Story
 
-## Project Purpose
+The environment developed in stages:
 
-The purpose of this homelab is to build and operate a real infrastructure environment that is useful at home and valuable for career development.
+1. Establish Proxmox as a clean virtualization foundation.
+2. Build a Debian VM for Docker-based services.
+3. Add DNS, monitoring, reverse proxy management, service navigation, and media applications.
+4. Configure private remote administration through Tailscale.
+5. Add Plex GPU passthrough and hardware transcoding.
+6. Deploy Home Assistant as a separate household operations platform.
+7. Integrate family calendar, work schedules, and Donetick chores.
+8. Refine workflows based on real household feedback.
+9. Add backup planning and deeper operational documentation.
 
-This project demonstrates hands-on experience with:
-
-- Proxmox VE virtualization
-- Linux server administration
-- Docker-based service hosting
-- Internal service monitoring
-- Private remote access
-- DNS and reverse proxy management
-- Home automation
-- REST API integration
-- Backup planning
-- Infrastructure hardening
-- Operational documentation
-- Practical troubleshooting
-- User-focused dashboard design
-
-The most important part of this project is that it is real. These are not isolated lab exercises. The services documented here support actual household workflows and infrastructure needs.
+The full progression is documented in [`docs/operations/project-evolution.md`](docs/operations/project-evolution.md).
 
 ## Environment Overview
 
-The environment is built around a Dell Precision T7820 workstation running Proxmox VE.
-
-Proxmox provides the virtualization layer. It hosts multiple virtual machines, including:
-
-- A Debian Docker VM used as the main service host
-- A Home Assistant OS VM used for household automation and dashboarding
-
-The Debian Docker VM runs most self-hosted services, including dashboards, monitoring, DNS, reverse proxy management, media services, Donetick, and the planned House Brain assistant stack.
-
-Home Assistant provides the household automation layer. It integrates with Google Calendar and Donetick to support family dashboard views, work schedule visibility, recurring chores, task completion feedback, and household coordination.
-
-## Core Infrastructure
+The environment runs on a Dell Precision T7820 with Proxmox VE.
 
 ### Proxmox VE
 
-Proxmox VE is the foundation of the environment.
-
-I use it to separate major workloads into virtual machines instead of running everything directly on one operating system. This provides cleaner boundaries and makes the environment easier to expand, troubleshoot, and recover.
+Proxmox provides the virtualization layer and remains focused on hosting and managing workloads.
 
 ### Debian Docker VM
 
-The Debian Docker VM is the primary service host.
-
-It runs the majority of Docker-based applications in the environment, including infrastructure services, dashboards, monitoring tools, media services, Donetick, and future assistant services.
-
-I chose this approach because it keeps the Proxmox host focused on virtualization while giving Docker services their own dedicated Linux environment.
+The Debian VM is the primary container host. It runs infrastructure, monitoring, DNS, dashboard, media, and household support services.
 
 ### Home Assistant OS VM
 
-Home Assistant OS runs as its own VM.
-
-I chose to keep Home Assistant separate from the general Docker stack because it functions more like a household operations platform than a standard containerized service. Running it in its own VM keeps home automation isolated, simplifies maintenance, and reduces the chance that changes to other Docker services will affect household dashboards and automations.
+Home Assistant runs separately because it has become the family-facing household operations layer. Keeping it isolated reduces the chance that media-stack or Docker experimentation will affect shared dashboards and workflows.
 
 ## Current Services
 
 ### Infrastructure and Operations
 
-- Docker
+- Docker and Docker Compose
 - Portainer
 - Homepage
 - Uptime Kuma
@@ -86,235 +59,177 @@ I chose to keep Home Assistant separate from the general Docker stack because it
 - Prowlarr
 - SABnzbd
 
-### Home Automation and Household Operations
+### Household Operations
 
 - Home Assistant OS
 - Google Calendar integration
+- Family dashboard
+- Work Week schedule workflow
+- Detailed and simplified work calendars
 - Donetick
-- Home Assistant family dashboard
-- Work Week schedule dashboard
-- Detailed and simplified work calendar entities
-- Home Assistant chore dashboard
 - Daily and weekly recurring chore creation
-- Donetick-backed chore completion notifications
+- Chore assignment and completion visibility
 
-## Home Assistant and Household Workflows
+## Selected Projects
 
-One of the most active parts of this environment is the Home Assistant household operations work.
+### [Plex Hardware Transcoding](docs/projects/plex-hardware-transcoding/)
 
-### Family Dashboard
+This project covers:
 
-The main Home Assistant page is being developed as a family application landing page rather than a default administration dashboard.
+- Intel IOMMU configuration
+- NVIDIA GPU identification
+- VFIO binding
+- PCI passthrough to the Debian VM
+- NVIDIA container access
+- Plex hardware-transcoding validation
+- Direct Play, Direct Stream, and audio/video transcode diagnosis
 
-It provides clear navigation to:
+### [Home Assistant Family Dashboard](docs/projects/home-assistant-family-dashboard/)
 
-- Family Calendar
-- Chores
-- Work Week
-- Additional household views as they are added
+The family dashboard is designed as a household application landing page rather than a default administration interface.
 
-Recent work improved the visual hierarchy, card layout, navigation consistency, and distinction between prominent destination cards and smaller secondary controls.
+The design emphasizes:
 
-### Work Week and Calendar Design
+- Clear primary destinations
+- Compact secondary actions
+- Minimal instructional clutter
+- Consistent navigation
+- Shared-display readability
 
-The work schedule workflow now separates accurate shift storage from simplified household display.
+### [Work Week and Calendar Design](docs/projects/home-assistant-work-week/)
 
-- Detailed work calendars store real shift start and end times.
+The schedule system separates accurate data from simplified presentation.
+
+- Detailed calendars retain exact shift start and end times.
 - Overnight shifts correctly end on the following date.
-- Separate display calendars create a single all-day entry on the date a shift begins.
-- An overnight shift does not create a second household-facing work entry on the following day.
-- Optional shift notes are only added when a meaningful note is present.
+- Display calendars create one all-day entry on the date the shift begins.
+- No second household-facing work entry is created because a shift ends after midnight.
 
-This solved a practical calendar problem: technically correct overnight events appeared to occupy two days in calendar views, even though the family wanted one clear indicator on the day the shift started.
+This design came from real user feedback: the first implementation was technically correct but visually misleading.
 
-### Chores and Donetick
+### [Home Assistant Chores](docs/projects/home-assistant-chores/)
 
-The chores workflow uses Donetick as the source of truth and Home Assistant as the household-facing interface.
+Donetick remains the task source of truth while Home Assistant provides the household interface.
 
-The current implementation includes:
+The workflow includes:
 
 - Active chore visibility
-- Daily recurring chore creation
-- Weekly recurring chore creation
+- Daily and weekly recurring creation
 - Assignee selection
-- Completed-today summaries
-- Completion notifications
-- A REST-command bridge for workflow features not exposed directly by the integration
-- Helper reset and confirmation behavior after submissions
-- Card Mod styling that hides the built-in `Active` label without hiding chore names
-- Removal of the default todo add-item interface so new chores use the intended recurring workflow
+- REST-based task creation
+- Helper reset after submission
+- Completion feedback
+- Removal of controls that bypass recurrence logic
+- Targeted Card Mod styling
 
-This part of the project turns the homelab into something useful beyond the server rack. It supports daily household coordination while also exercising API integration, state handling, UI design, and troubleshooting.
+### [Homepage Dashboard](docs/projects/homepage-dashboard/)
 
-## Recent Troubleshooting Highlights
+Homepage provides navigation and selected status visibility. Uptime Kuma remains responsible for availability monitoring.
 
-Recent work included several design and implementation problems that required iterative testing:
+The project includes troubleshooting of host validation, active bind mounts, service grouping, and actual container naming.
 
-- Overnight calendar events appeared on both the starting and ending day.
-- One calendar entity could not simultaneously provide exact shift data and the desired simplified visual display.
-- Empty Home Assistant helper states could create poor calendar descriptions.
-- Donetick entity visibility did not provide the complete recurring-chore creation workflow.
-- Recurrence payloads required careful API request formatting.
-- Input helpers retained stale values after submission.
-- Broad Card Mod selectors hid chore names along with the unwanted card header.
-- Built-in todo controls bypassed assignment and recurrence logic.
-- Default dashboard buttons were too visually heavy for secondary actions.
-- The main Home Assistant page needed to look and behave more like a household application.
+## Real User Feedback
 
-The consolidated investigation steps, resolutions, results, and lessons are documented in:
+Some of the most important changes came after the systems were used by other people.
 
-- `docs/operations/recent-project-troubleshooting.md`
+Examples include:
 
-## Architecture Summary
+- Redesigning overnight work entries after they appeared to occupy two days.
+- Simplifying the Home Assistant landing page because the first version felt like a configuration screen.
+- Making secondary buttons smaller so they did not compete with the schedule.
+- Hiding the default todo creation path because it bypassed recurrence and assignment logic.
+- Resetting helper inputs so old values were not carried into the next chore.
 
-At a high level, the environment is organized into four layers:
+These changes demonstrate a recurring principle in the project: technically valid behavior is not always good operational behavior.
 
-1. **Physical and virtualization layer**
-   - Dell Precision T7820
-   - Proxmox VE
-   - VM separation for major workloads
+## Validation Practices
 
-2. **Service hosting layer**
-   - Debian Docker VM
-   - Docker and Portainer
-   - Infrastructure, monitoring, DNS, reverse proxy, media, household, and future assistant services
+Changes are validated through the layer closest to the behavior being tested.
 
-3. **Home automation layer**
-   - Home Assistant OS VM
-   - Google Calendar integration
-   - Donetick integration
-   - Household dashboards and workflow scripts
+Examples:
 
-4. **Access and visibility layer**
-   - Tailscale for private remote access
-   - Homepage for centralized service navigation
-   - Uptime Kuma for service health visibility
-   - Home Assistant for family-facing operational visibility
+- `docker ps` and health state after container recreation
+- Live mount inspection before backup or configuration work
+- Direct DNS resolution testing
+- Tailscale machine and address verification
+- Plex playback details read separately for video and audio
+- GPU ownership and visibility checked across host, VM, container, and application
+- Same-day and overnight calendar test cases
+- Daily and weekly chore creation tests
+- Visible Card Mod tests before narrowing selectors
+- Backup archive size and content review
 
-This structure keeps the environment understandable as it grows.
+## Troubleshooting Narrative
 
-## Completed Work
+The repository includes both recent and historical troubleshooting writeups:
 
-Completed work includes:
+- [`docs/operations/historical-build-and-troubleshooting.md`](docs/operations/historical-build-and-troubleshooting.md)
+- [`docs/operations/recent-project-troubleshooting.md`](docs/operations/recent-project-troubleshooting.md)
 
-- Proxmox VE deployed on Dell Precision T7820 hardware
-- Debian Docker VM created as the primary service host
-- Docker service stack deployed
-- Portainer configured for Docker visibility
-- Homepage deployed and organized into useful service sections
-- Uptime Kuma deployed for service monitoring
-- Pi-hole deployed for DNS and ad-blocking
-- Nginx Proxy Manager deployed as a reverse proxy layer
-- Tailscale configured for private remote access
-- Plex/Arr media stack deployed
-- Home Assistant OS deployed in Proxmox
-- Google Calendar integrated with Home Assistant
-- Home Assistant family dashboard created and visually refined
-- Work Week schedule entry and dashboard workflow implemented
-- Overnight shift handling implemented
-- Separate detailed and display work calendars designed
-- Donetick deployed in Docker
-- Donetick integrated with Home Assistant
-- Chore dashboard created in Home Assistant
-- Daily and weekly chore creation workflows implemented
-- REST-based Donetick task creation implemented
-- Donetick-backed chore completion notifications configured
-- Todo card display cleaned up with targeted Card Mod styling
-- Homepage expanded with Home Assistant, Donetick, Docker metrics, Tailscale Machines, and organized service sections
-- Backup script created for selected Docker and infrastructure configuration paths
-- SSH hardening completed
-- Recent project troubleshooting documented
+These documents cover failed assumptions, investigation steps, final resolutions, and lessons learned across Proxmox, Docker, networking, Plex, backups, Home Assistant, calendars, and chores.
 
-## Planned Improvements
+## Known Limitations
 
-Planned work includes:
+The environment is functional, but several areas remain intentionally marked incomplete:
 
-- UFW/firewall hardening
-- Restore testing from backups
-- More formal architecture diagrams
-- Improved monitoring and alerting
-- Better documentation of recovery procedures
-- House Brain/Hermes local AI assistant layer
-- Typed household summary prototype using Home Assistant calendar data
-- Alexa bridge for voice-assisted household workflows
-- Additional Home Assistant dashboard refinements
-- Evaluation of whether unused calendar view modes can be hidden from the shared display
-- Monthly recurring chore creation
-- Sanitized configuration examples and screenshots
-- Dedicated future cybersecurity lab repository built on top of this infrastructure
+- Backup restore testing has not yet been completed.
+- Off-host backup handling should become more formal.
+- Some storage paths reflect earlier deployments rather than one perfect convention.
+- Monthly recurring chore creation is not implemented.
+- The simplified work display calendar omits exact shift times by design.
+- Monitoring is availability-focused rather than full observability.
+- Current-state screenshots still need to be sanitized and added.
 
-UFW/firewall hardening and calendar view hiding are documented as planned work and should not be represented as completed until implemented and tested.
+## What I Would Do Differently
+
+If rebuilding from the beginning, I would:
+
+- Standardize `/srv/docker/<service>` earlier.
+- Define container naming conventions before deployment.
+- Inventory bind mounts and named volumes before writing backups.
+- Capture sanitized screenshots at major milestones.
+- Separate detailed and display calendar entities earlier.
+- Record validation steps during implementation rather than reconstructing them later.
 
 ## Security and Privacy
 
-This repository uses sanitized documentation and example files.
+The repository uses sanitized documentation and examples.
 
-It does not include production secrets, raw configuration files, private keys, API tokens, passwords, personal calendar data, private household details, or sensitive screenshots.
+It does not include:
 
-Example files use placeholder values such as:
-
-- `CHANGEME`
-- `LOCAL_IP`
-- `SERVICE_URL`
-- `API_TOKEN_HERE`
-- `HOMELAB_HOST`
-- `HOME_ASSISTANT_URL`
-- `DONETICK_HOST`
+- Passwords
+- API tokens
+- Private keys
+- Personal calendar data
+- Sensitive household details
+- Raw production configuration
+- Unnecessary internal or tailnet information
 
 ## Skills Demonstrated
 
-This project demonstrates practical experience with:
-
+- Proxmox virtualization
 - Linux administration
-- Virtualization
-- Docker and containerized services
-- Service monitoring
-- Internal DNS
-- Reverse proxy management
+- Docker and Docker Compose
+- PCI passthrough and VFIO
+- NVIDIA container integration
+- Plex playback diagnostics
 - Private remote access
-- Home automation
+- DNS and service networking
+- Monitoring and operational visibility
+- Home Assistant automation
 - REST API integration
 - Calendar and time-range modeling
-- Dashboard and workflow design
+- User-focused dashboard design
 - Backup planning
-- Infrastructure troubleshooting
+- Cross-layer troubleshooting
 - Operational documentation
-- Security-conscious system design
 
 ## Documentation
 
-Start here:
+Start with:
 
-- `docs/README.md`
-- `docs/projects/README.md`
+- [`docs/README.md`](docs/README.md)
+- [`docs/operations/project-evolution.md`](docs/operations/project-evolution.md)
+- [`docs/projects/README.md`](docs/projects/README.md)
 
-Current documentation includes:
-
-- `docs/architecture/overview.md`
-- `docs/architecture/service-map.md`
-- `docs/security/security-model.md`
-- `docs/operations/backup-plan.md`
-- `docs/operations/maintenance-notes.md`
-- `docs/operations/restore-notes.md`
-- `docs/operations/recent-project-troubleshooting.md`
-- `docs/projects/home-assistant-family-dashboard/README.md`
-- `docs/projects/home-assistant-work-week/README.md`
-- `docs/projects/home-assistant-chores/README.md`
-- `docs/projects/house-brain-hermes/README.md`
-- `docs/projects/homepage-dashboard/README.md`
-- `examples/README.md`
-
-Planned documentation includes:
-
-- `docs/security/remote-access.md`
-- `docs/security/hardening-roadmap.md`
-- `docs/career/project-summary.md`
-- Sanitized Home Assistant YAML examples
-
-## Notes for Reviewers
-
-This project is a living homelab. Some areas are complete and actively used, while others are planned improvements.
-
-The value of this project is not simply that it runs a list of tools. The value is in how the pieces fit together: virtualization, Linux administration, Docker operations, monitoring, private remote access, home automation, API integration, backup planning, user feedback, and practical troubleshooting.
-
-This is the infrastructure foundation I plan to keep building on.
+The value of this project is not simply that it runs a list of tools. The value is in how the pieces fit together, how problems were narrowed, and how the environment changed after real use exposed better requirements.
