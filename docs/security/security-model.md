@@ -1,216 +1,196 @@
 # Security Model
 
-This document describes the current security model for my homelab.
+This document describes the current security model for my homelab and the reasoning that led to it.
 
-This is not an enterprise network, but I still want the management plane to stay private, the attack surface to stay limited, and the documentation to be honest about what is complete versus what is planned.
+This is not an enterprise network, but the management plane should remain private, the attack surface should stay limited, and completed work should be clearly separated from planned hardening.
 
 ## Security Goals
 
-My current security goals are:
+- Keep administrative services private where possible.
+- Avoid unnecessary public exposure.
+- Use Tailscale for private remote access.
+- Separate major workloads by role.
+- Harden obvious administrative access paths.
+- Preserve a recovery path while making security changes.
+- Keep public documentation sanitized.
 
-- Keep administrative services private where possible
-- Avoid unnecessary public exposure
-- Use Tailscale for private remote access
-- Separate major workloads by role
-- Harden obvious administrative access paths
-- Document completed security work honestly
-- Track planned improvements separately from completed work
-- Keep public documentation sanitized
-
-The goal is practical risk reduction, not pretending the homelab is a fully mature enterprise environment.
+The goal is practical risk reduction, not cosmetic compliance.
 
 ## Current Security Posture
 
-The environment currently follows a private-by-default approach.
-
-Most administrative access is intended to happen through either the local network or Tailscale. I do not want management dashboards exposed directly to the public internet unless there is a specific reason and I understand the risk.
-
-Current security-related controls include:
+Current controls include:
 
 - Proxmox workload separation
-- Dedicated Debian Docker VM for service hosting
-- Dedicated Home Assistant OS VM for home automation
+- Dedicated Debian Docker VM
+- Dedicated Home Assistant OS VM
 - Tailscale private remote access
-- SSH hardening
-- Limited public exposure
+- Root SSH login disabled
+- SSH restricted to the intended administrative user
+- Only the required Plex service path publicly forwarded
+- Administrative services kept on LAN/Tailscale
 - Sanitized public documentation
-- Clear separation between completed and planned work
+
+## How the Model Evolved
+
+### Private access before public exposure
+
+Tailscale was installed early so that Proxmox, the Debian VM, Home Assistant, and internal web interfaces could be reached without exposing each management port through the router.
+
+This established the default pattern: remote administration should use the private overlay network unless a service has a specific user-facing reason to be public.
+
+### Plex required a deliberate exception
+
+Plex remote access required a public router forwarding rule. Rather than treating this as permission to publish the rest of the stack, the exposure was limited to Plex.
+
+Testing also clarified that forwarding an additional Plex port would not improve simultaneous streaming capacity. Port count and server capacity are separate concerns.
+
+### SSH was hardened after remote access was stable
+
+The Debian VM was first made reliably reachable through LAN and Tailscale. Root SSH login was then disabled and access was restricted to the intended administrative account.
+
+This order reduced the risk of hardening the system before a dependable management path existed.
+
+### UFW was intentionally deferred
+
+UFW hardening remains planned, not forgotten.
+
+The work was postponed because changes were being made remotely and an incorrect firewall rule could have blocked SSH, Tailscale, or Docker-published services. The safer implementation point is when local access or the Proxmox console is open and available for recovery.
+
+This is an example of risk-based sequencing: applying a control without a rollback path can create an avoidable outage.
+
+## Problems Encountered and Lessons
+
+### Remote URLs were sometimes valid only in the wrong context
+
+Home Assistant onboarding and authentication flows occasionally returned `localhost` or LAN-based callback addresses. The service itself was healthy, but the generated URL did not make sense from the remote client.
+
+**Resolution:** Used the correct Tailscale address for the target system after authentication.
+
+**Lesson:** Access control troubleshooting must distinguish service health from address context.
+
+### Public exposure could have expanded by accident
+
+Once router configuration was being changed for Plex, it would have been easy to expose management services for convenience.
+
+**Resolution:** Kept Portainer, Proxmox, Pi-hole, Nginx Proxy Manager, Uptime Kuma, Home Assistant administration, and the Arr applications private.
+
+### Docker and host firewall behavior require testing together
+
+Docker publishes ports through its own networking and packet-filtering behavior. A future UFW policy must be tested against actual container access rather than assuming host rules alone describe the effective exposure.
+
+### Installed security tooling is not automatically effective
+
+Nginx Proxy Manager being installed does not mean every service is routed through it. Uptime Kuma being installed does not provide security monitoring. Tailscale being installed does not eliminate the need to review local listening ports.
+
+**Lesson:** Security documentation should describe effective controls, not merely installed products.
 
 ## Workload Separation
 
-The environment separates major service roles across virtual machines.
-
 ### Proxmox VE
 
-Proxmox provides the virtualization layer.
-
-Its role is to host and manage the major workloads. Management access to Proxmox should remain private.
+Proxmox hosts and manages major workloads. Its management interface remains private.
 
 ### Debian Docker VM
 
-The Debian Docker VM hosts most containerized services.
-
-This keeps application services separate from the Proxmox host and gives Docker workloads their own dedicated Linux environment.
-
-Services hosted on this VM include:
-
-- Portainer
-- Homepage
-- Uptime Kuma
-- Pi-hole
-- Nginx Proxy Manager
-- Plex/Arr stack
-- Donetick
+The Debian VM contains most containerized services. This keeps application changes away from the hypervisor and provides one place to apply Linux and Docker operational controls.
 
 ### Home Assistant OS VM
 
-Home Assistant OS runs separately from the Docker service stack.
+Home Assistant runs separately because it supports household operations. Media-stack or Docker experimentation should not directly destabilize household dashboards and automations.
 
-This separation matters because Home Assistant is becoming the household operations platform. I want it isolated enough that changes to the media or infrastructure service stack do not directly tangle with home automation.
+## Remote Access Principles
 
-## Remote Access
-
-Remote access is handled through Tailscale.
-
-This is one of the most important security decisions in the environment. Tailscale lets me access internal services remotely without exposing administrative dashboards directly to the public internet.
-
-Remote access principles:
-
-- Prefer Tailscale for administrative access
-- Keep Proxmox private
-- Keep Portainer private
-- Keep Home Assistant administrative access private
-- Keep monitoring and DNS admin interfaces private
-- Review any public exposure carefully
-
-## Public Exposure
-
-The environment is designed to minimize public exposure.
-
-Most services should be reachable only through:
-
-- Local network access
-- Tailscale private access
-- Controlled internal DNS or reverse proxy paths
-
-Services that should not be directly exposed to the public internet include:
-
-- Proxmox VE
-- Portainer
-- Home Assistant administrative interfaces
-- Uptime Kuma administrative interface
-- Pi-hole administrative interface
-- Nginx Proxy Manager administrative interface
-- Radarr
-- Sonarr
-- Prowlarr
-- SABnzbd
-- Donetick administrative access
-
-Any service exposure should be reviewed based on need, authentication, update status, and risk.
+- Prefer Tailscale for administration.
+- Keep Proxmox private.
+- Keep Portainer private.
+- Keep Home Assistant administration private.
+- Keep monitoring and DNS administration private.
+- Review every public forwarding rule by service need.
+- Do not treat obscurity or alternate port numbers as security controls.
 
 ## SSH Hardening
 
-SSH hardening has been completed on the Debian Docker VM.
+Completed:
 
-The goal was to reduce unnecessary administrative access risk and avoid weak default patterns.
+- Root SSH login disabled.
+- Access restricted to the intended administrative user.
+- Administrative access kept private through LAN/Tailscale.
 
-Completed SSH hardening work includes:
+Possible future improvements:
 
-- Root SSH login disabled
-- SSH access restricted to the intended administrative user
-- Administrative access kept private where practical
-
-Future SSH improvements may include:
-
-- Key-only SSH authentication
-- Additional logging review
-- Fail2ban or similar brute-force protection if needed
-- More formal access documentation
+- Key-only authentication.
+- Additional authentication logging review.
+- Fail2ban if the threat model warrants it.
+- More formal administrative access documentation.
 
 ## Firewall Status
 
-UFW/firewall hardening is planned work.
+UFW/firewall hardening is planned.
 
-This should not be represented as completed until it is implemented and tested.
+The intended baseline should:
 
-The future firewall model should define allowed access by source and service role.
+- Allow required trusted-LAN access.
+- Allow required Tailscale management access.
+- Preserve established SSH access.
+- Limit unnecessary inbound traffic.
+- Account for Docker-published ports.
+- Document every allowed service and source.
+- Be applied only with console recovery available.
+- Be tested before the remote session is closed.
 
-Expected firewall goals include:
-
-- Allow trusted LAN access where required
-- Allow Tailscale access for management
-- Limit unnecessary inbound traffic
-- Keep Docker service exposure intentional
-- Document allowed ports and service purpose
-- Test access before and after firewall changes
+It should not be represented as complete until these tests are performed.
 
 ## Backup Security
 
-A backup script exists for selected Docker and infrastructure configuration paths.
+Backups contain sensitive operational data and remain outside the public repository. Restore testing is still pending, so the backups are useful but not yet fully validated.
 
-Backups may contain sensitive operational data, so they are treated as private artifacts and are not stored in this public repository.
+## Monitoring Boundaries
 
-Restore testing is still planned. Until restore testing is completed, backups should be considered implemented but not fully validated.
+Uptime Kuma provides availability monitoring. Homepage provides navigation and selected status visibility. Neither is a SIEM, EDR, IDS, or complete observability platform.
 
-## Monitoring and Visibility
-
-Uptime Kuma provides service health monitoring.
-
-Homepage provides centralized service visibility and navigation.
-
-These tools help me understand whether services are reachable, but they are not a replacement for security monitoring or SIEM-style logging.
-
-That kind of cybersecurity monitoring will be handled in a separate future security lab project.
+Security-specific telemetry, detection engineering, and attack simulation will be documented in a separate future cybersecurity lab project.
 
 ## Documentation Security
 
-This repository is intentionally documentation-focused.
-
-Public documentation should describe:
+Public documentation may include:
 
 - Architecture
-- Service purpose
+- Service roles
 - Design decisions
-- Operational practices
 - Sanitized examples
-- Planned improvements
+- Troubleshooting methods
+- Honest status and limitations
 
-It should not expose secrets, private operational data, sensitive screenshots, raw production configs, or personal household details.
+It should not include:
+
+- Passwords or API tokens
+- Private keys
+- Raw production configurations
+- Personal calendar data
+- Private household details
+- Sensitive screenshots
+- Unnecessary public IP or tailnet details
 
 ## Current Completed Security Work
 
-Completed security-related work includes:
-
-- Tailscale private remote access
+- Private remote administration through Tailscale
 - SSH hardening on the Debian Docker VM
-- Avoidance of public exposure for administrative services
-- Public documentation sanitized for portfolio use
-- Clear separation between completed work and planned improvements
+- Limited public exposure for Plex only
+- Administrative services kept private
+- Workload separation by role
+- Sanitized portfolio documentation
 
 ## Planned Security Improvements
 
-Planned improvements include:
-
-- UFW/firewall hardening
+- UFW/firewall implementation and validation
+- Key-only SSH authentication review
 - Restore testing
-- More formal network and service access documentation
-- More complete hardening notes
-- Improved monitoring and alerting
-- Dedicated cybersecurity lab project using this infrastructure as the foundation
+- Better network and allowed-port documentation
+- Improved alerting
+- Dedicated cybersecurity lab built on this infrastructure
 
 ## Security Design Summary
 
-The current security model is based on practical risk reduction.
+The current model is based on controlled exposure, workload separation, and recoverable change management.
 
-My current approach is:
-
-- Keep management private
-- Separate workloads by role
-- Avoid unnecessary public exposure
-- Use Tailscale for remote access
-- Harden SSH access
-- Document what is complete versus planned
-- Keep public documentation sanitized
-
-This gives the homelab a solid operational foundation while leaving room for future hardening and dedicated cybersecurity lab work.
+The important lesson from the build process is that security changes are operational changes. They should be tested with the same care as application changes, and they should not be marked complete simply because a package was installed or a configuration line was added.
