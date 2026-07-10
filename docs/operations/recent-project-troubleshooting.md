@@ -148,6 +148,28 @@ The `Active` label is hidden while chore names remain visible.
 
 When modifying frontend components, first prove that the styling mechanism works, then narrow selectors against the actual rendered structure.
 
+## Bold Chore Names
+
+### Problem
+
+Increasing font weight on the outer card and common heading elements produced no visible change to individual chore names.
+
+### Investigation
+
+The todo-list card renders item content inside nested component structure. Styling the card shell did not reach the actual summary text.
+
+### Resolution
+
+Used Card Mod to target the nested todo item summary element rather than applying a broad font rule to the entire card.
+
+### Result
+
+Each chore name is easier to scan while checkboxes, completion behavior, and surrounding labels remain unchanged.
+
+### Lesson
+
+A CSS rule can be valid and still have no effect when a web component's internal rendering boundary is not being targeted.
+
 ## Built-In Todo Add Item Interface
 
 ### Problem
@@ -161,6 +183,24 @@ Hid the built-in add-item interface and made the custom chore creation controls 
 ### Result
 
 New chores consistently use the intended Donetick-backed workflow.
+
+## Person Assignment and Todo Entities
+
+### Problem
+
+Home Assistant `person` entities and standard todo entities do not provide a native item-level assignment relationship. Placing separate lists under Joe and Samantha creates a clear user interface, but it does not add person metadata to the items themselves.
+
+### Resolution
+
+Kept Donetick's assignee IDs as the source of truth for chores. Personal todo lists remain separate entities whose ownership is established by configuration and naming rather than a built-in Home Assistant assignment field.
+
+### Future Impact
+
+The future Hermes or House Brain layer can map known list entities to household members, but it must treat that mapping as application logic. It should not assume the underlying todo item contains person ownership data.
+
+### Lesson
+
+Visual organization and backend data relationships are not the same thing. Agent integrations should consume authoritative metadata rather than infer ownership only from where an item is displayed.
 
 ## Family Dashboard Visual Design
 
@@ -180,6 +220,100 @@ Removed unnecessary explanatory text from live cards and kept technical document
 
 Operational dashboards are more useful when the interface prioritizes decisions and actions while documentation carries the implementation detail.
 
+## Dashboard Navigation Paths
+
+### Problem
+
+Some navigation buttons opened the wrong location or stopped working after a dashboard was renamed or reorganized. The title shown in Home Assistant did not guarantee the expected URL path.
+
+### Investigation
+
+Directly opened each target dashboard, copied the working path, and compared it with the path used in the button action.
+
+### Resolution
+
+Updated navigation actions to use the verified paths for Work Week, Todo Lists, Shopping, Calendar, and Overview.
+
+### Result
+
+The family splash page now acts as a reliable launcher instead of depending on guessed Lovelace routes.
+
+### Lesson
+
+Treat dashboard paths as configuration values that must be verified, not automatically derived from display names.
+
+## Theme Configuration Appeared Ineffective
+
+### Problem
+
+Installing or creating a theme file did not immediately change the dashboard, making the theme appear broken.
+
+### Investigation
+
+Confirmed that Home Assistant must load the themes directory through configuration and that a theme must then be selected for the active profile or dashboard.
+
+### Resolution
+
+Enabled the themes directory, reloaded or restarted Home Assistant, and explicitly applied the selected Catppuccin Latte/Rosewater-inspired theme.
+
+### Lesson
+
+A correct theme definition can appear nonfunctional when the resource-loading and selection steps are incomplete.
+
+## Responsive Calendar Header
+
+### Problem
+
+Calendar header adjustments that looked better in landscape could make portrait mode worse, and fixes for portrait could crowd or misalign controls in landscape.
+
+### Investigation
+
+Compared screenshots from both orientations after each YAML and Card Mod change. The issue was not one universal mobile layout but two width regimes with different wrapping behavior.
+
+### Resolution
+
+Used responsive styling and retained the layout that behaved acceptably in both orientations rather than optimizing only the latest screenshot.
+
+### Result
+
+The calendar remains usable vertically and horizontally, although some custom-card controls still impose layout limits.
+
+### Lesson
+
+Responsive dashboard work requires regression testing across orientations. A change is not an improvement when it merely moves the defect to another viewport.
+
+## Hard-Coded Calendar Controls
+
+### Problem
+
+Attempts to replace the calendar's `+` control with an `Add Event` text label did not work. Similar attempts to move the month-view selector risked breaking alignment.
+
+### Investigation
+
+The visible controls were generated internally by the custom calendar card rather than exposed as normal Home Assistant button cards.
+
+### Resolution
+
+Kept the stable built-in control and avoided fragile DOM manipulation that could break after a card update.
+
+### Lesson
+
+Custom cards define their own customization boundary. Not every visible element is safely configurable through Lovelace YAML or Card Mod.
+
+## Calendar Synchronization Delay
+
+### Observation
+
+An event added to Google Calendar from an email did not appear in Home Assistant immediately, but it arrived after the integration refreshed.
+
+### Conclusion
+
+The event path was working; the apparent failure was a normal synchronization delay rather than a broken calendar mapping.
+
+### Lesson
+
+Before changing a working integration, allow for polling or refresh delay and verify the source calendar directly.
+
 ## Calendar View Simplification
 
 ### Problem
@@ -188,7 +322,7 @@ Some calendar view modes are not useful for the shared household display and may
 
 ### Current Status
 
-The dashboard navigation and calendar configuration are being reviewed to determine whether unused view modes can be hidden entirely or should simply be excluded from the normal household navigation path.
+The household workflow now enters through a purpose-built calendar dashboard. Completely hiding internal view options remains dependent on the capabilities of the custom calendar card.
 
 This remains an open refinement rather than a completed feature.
 
@@ -199,4 +333,7 @@ This remains an open refinement rather than a completed feature.
 - UI simplification should not weaken the underlying data model.
 - Small CSS changes should be tested incrementally against rendered component structure.
 - Integrations often need script or API glue to support a complete user workflow.
+- Responsive UI changes require testing across multiple viewport shapes.
+- Custom-card internals place practical limits on safe Lovelace customization.
+- Visual grouping should not be mistaken for authoritative assignment metadata.
 - Public documentation should record failed assumptions and design changes, not only the final configuration.
