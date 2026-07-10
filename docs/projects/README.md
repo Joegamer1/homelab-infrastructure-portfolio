@@ -2,27 +2,30 @@
 
 This folder contains focused project writeups from my homelab and household operations work.
 
-The main repository explains the overall infrastructure platform. These project folders document the individual systems that make the platform useful at home, including the design decisions, operational problems, and troubleshooting that led to the current implementation.
+The main repository explains the overall infrastructure platform. These project folders document the individual systems that make the platform useful at home, including design decisions, operational problems, user feedback, validation methods, and troubleshooting that led to the current implementation.
 
 ## Current Projects
 
+- [`plex-hardware-transcoding/`](plex-hardware-transcoding/) — Proxmox PCI passthrough, NVIDIA container access, Plex playback diagnostics, and hardware-transcoding validation.
 - [`home-assistant-family-dashboard/`](home-assistant-family-dashboard/) — the main household-facing Home Assistant landing page and navigation design.
 - [`home-assistant-work-week/`](home-assistant-work-week/) — work schedule entry and display, including overnight shifts, detailed calendar storage, and simplified all-day display calendars.
 - [`home-assistant-chores/`](home-assistant-chores/) — a Home Assistant chore workflow backed by self-hosted Donetick, REST-based recurring task creation, assignment, and completion visibility.
+- [`homepage-dashboard/`](homepage-dashboard/) — the Homepage launchpad organization and application troubleshooting project.
 - [`house-brain-hermes/`](house-brain-hermes/) — the planned local assistant layer for Home Assistant and household summaries.
-- [`homepage-dashboard/`](homepage-dashboard/) — the Homepage launchpad organization project.
 
-## Cross-Project Troubleshooting
+## Project Narrative
 
-- [`../operations/recent-project-troubleshooting.md`](../operations/recent-project-troubleshooting.md) — a consolidated log of recent Home Assistant implementation problems, investigation steps, resolutions, and lessons learned.
+- [`../operations/project-evolution.md`](../operations/project-evolution.md) — how the environment progressed from a traditional homelab into a household infrastructure and operations platform.
+- [`../operations/historical-build-and-troubleshooting.md`](../operations/historical-build-and-troubleshooting.md) — broader infrastructure build history and troubleshooting.
+- [`../operations/recent-project-troubleshooting.md`](../operations/recent-project-troubleshooting.md) — detailed recent Home Assistant implementation problems and resolutions.
 
 ## Planned Project Areas
 
+- Sanitized current-state screenshots
 - Sanitized Home Assistant configuration examples
 - Donetick backup and recovery details
 - Backup and restore validation
 - Monitoring improvements
 - Additional Home Assistant dashboard refinements
-- House Brain typed-interface prototype
 
-Cybersecurity-specific labs should stay separate unless they are documenting the infrastructure foundation they depend on.
+Cybersecurity-specific labs should stay separate unless they document the infrastructure foundation they depend on.
