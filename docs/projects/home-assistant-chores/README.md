@@ -36,6 +36,7 @@ This lets Donetick handle task data while Home Assistant remains the single plac
 - Completed-today summaries are displayed.
 - Completion notifications are available in Home Assistant.
 - The built-in todo add-item interface is hidden so users use the intended recurring-chore workflow.
+- Individual chore names are displayed with stronger font weight for better readability.
 
 ## User Workflow
 
@@ -85,6 +86,20 @@ The goal is not to reproduce every Donetick administration feature in Home Assis
 
 This was a useful reminder that dashboard CSS should be tested against the rendered component structure rather than applied broadly.
 
+### Chore names did not become bold through ordinary card styling
+
+**Problem:** Styling the outer card or common heading elements did not affect the rendered chore text because the todo-list component uses nested internal elements.
+
+**Resolution:** Targeted the todo-list component's nested structure through Card Mod and applied font weight to the actual item summary element. The final selector was kept narrow so completion controls and surrounding labels were not unintentionally changed.
+
+### Home Assistant people are not a native assignment model for todo entities
+
+**Problem:** A standard Home Assistant todo entity does not automatically associate each list item with a `person` entity. Separate personal todo lists can be presented next to each person's dashboard content, but this is organizational convention rather than item-level ownership enforced by Home Assistant.
+
+**Resolution:** Kept Donetick's user IDs as the authoritative assignee model for chores. Personal Home Assistant todo lists remain separate list entities rather than being treated as a substitute for Donetick assignment.
+
+This distinction matters for future automation: House Brain or Hermes can interpret which list belongs to which person, but it should not assume Home Assistant todo items contain native person metadata that is not actually present.
+
 ### Successful actions needed clear feedback
 
 **Problem:** A submitted chore could take a moment to appear through the integration, making the interface feel unresponsive.
@@ -101,7 +116,7 @@ This was a useful reminder that dashboard CSS should be tested against the rende
 
 ### Keep Donetick as the source of truth
 
-Home Assistant does not maintain a second independent chore database. This prevents recurrence state and completion history from diverging.
+Home Assistant does not maintain a second independent chore database. This prevents recurrence state, assignment, and completion history from diverging.
 
 ### Keep the dashboard focused
 
@@ -111,6 +126,10 @@ The dashboard avoids instructional markdown and backend terminology. It exposes 
 
 Daily and weekly creation are separate enough to remain understandable and testable. Monthly recurrence can be added later without destabilizing the working flows.
 
+### Do not confuse visual grouping with data ownership
+
+Displaying a list beneath a person's name does not create an actual relationship between the todo items and that Home Assistant person. Integrations and future agents should use the real backend assignment data when assignment matters.
+
 ## Future Improvements
 
 - Add a monthly recurring chore workflow.
@@ -118,6 +137,7 @@ Daily and weekly creation are separate enough to remain understandable and testa
 - Improve error feedback when the Donetick API is unavailable.
 - Add sanitized dashboard and workflow examples.
 - Document backup and recovery of Donetick data.
+- Expose stable assignee metadata to the future House Brain layer without duplicating Donetick's task database.
 
 ## Files To Add or Expand
 
@@ -139,4 +159,5 @@ Public examples should avoid private household details, API tokens, authenticati
 - Dashboard UX design
 - CSS/Card Mod debugging
 - State management and input validation
+- Data-model boundary analysis
 - Separation of backend and presentation responsibilities
