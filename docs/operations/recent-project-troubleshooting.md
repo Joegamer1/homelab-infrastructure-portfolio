@@ -2,338 +2,197 @@
 
 This document summarizes significant implementation problems encountered during recent Home Assistant household-operations work and the steps used to resolve them.
 
-The purpose is to preserve the reasoning behind the final design. A finished dashboard rarely shows the failed assumptions, rendering limitations, integration gaps, and iterative testing that were required to make it reliable.
+The purpose is to preserve the reasoning behind the final design. A finished dashboard rarely shows the failed assumptions, rendering limitations, integration gaps, and iterative testing required to make it reliable.
 
 ## Work Schedule and Calendar Display
 
-### Requirement
+### Overnight shifts appeared on two days
 
-Display accurate work shifts, including overnight shifts, while keeping the household calendar visually simple.
+**Problem:** A timed shift that started in the afternoon and ended after midnight was correctly stored across two dates, but calendar views made it appear as two work days.
 
-### Initial Problem
+**Investigation:**
 
-A timed shift that started in the afternoon and ended after midnight was correctly stored as a multi-date event. However, calendar views visually extended the event into the following day. This made a single overnight shift look like two work days.
+1. Confirmed that the detailed event must end on the following date.
+2. Compared weekly schedule requirements with family calendar presentation requirements.
+3. Verified that all-day calendar end dates are exclusive.
+4. Determined that changing the detailed event would damage schedule accuracy.
 
-### Investigation
+**Resolution:** Created separate detailed and display calendar entities. The detailed calendar stores exact times; the display calendar receives one all-day entry on the date the shift starts.
 
-1. Confirmed that the event end date must be the following day for an overnight shift.
-2. Compared the needs of the weekly schedule card with the needs of the family calendar.
-3. Tested the expected behavior of all-day events.
-4. Identified that an all-day event uses an exclusive end date.
-5. Determined that changing the original timed event would damage the accuracy needed by schedule sensors and cards.
+**Lesson:** Accurate source data and simplified presentation may require separate models.
 
-### Resolution
+### Browser Mod popup did not open
 
-Created separate detailed and display calendar entities.
+**Problem:** The Add Shift button appeared to do nothing.
 
-- The detailed calendar stores the real start and end times.
-- The display calendar receives a one-day all-day event on the date the shift starts.
-- No display entry is created on the date the overnight shift ends.
+**Investigation:** The YAML called a Browser Mod popup service, but Browser Mod had not been added as a Home Assistant integration.
 
-### Result
+**Resolution:** Installed Browser Mod as an integration and retested the popup independently from the shift script.
 
-The schedule logic remains accurate, while the family calendar shows one clean day-level work indicator.
+**Lesson:** A frontend resource and an integration-provided service are different layers. Validate that the service exists before debugging the form content.
 
-### Lesson
+### Add Shift popup worked but no event was created
 
-When the same source data must support both calculations and simplified presentation, separate storage and display models can be cleaner than increasingly complex formatting logic.
+**Problem:** After function changes, the popup opened but the shift was not added and no useful confirmation appeared.
 
-## Shift Notes Handling
+**Investigation:** The workflow was split into layers:
 
-### Requirement
+1. Popup invocation
+2. Helper state updates
+3. Script execution
+4. Overnight date calculation
+5. Detailed calendar service call
+6. Display calendar service call
 
-Allow optional notes without adding empty or invalid descriptions to calendar events.
+**Resolution:** Restored the complete script path and verified both calendar events after submission.
 
-### Problem
+**Lesson:** For multi-layer Home Assistant workflows, test the user interface, helpers, script, and integration calls separately.
 
-Home Assistant helpers may return blank strings or states such as `unknown` and `unavailable`. Passing these directly to the calendar service creates poor descriptions.
+### Shift times defaulted to the current time
 
-### Resolution
+**Problem:** Opening the shift form populated time helpers with the current clock time, which was rarely the intended starting value.
 
-Added conditional logic that only includes the event description when a meaningful note is present.
+**Resolution:** Changed the default to `00:00` for predictable new entries.
 
-### Result
+### Date picker month label became stale
 
-Normal shifts remain clean, while optional context is preserved when entered.
+**Problem:** Navigating from one month to another did not always update the displayed month label. A selected date could then appear inconsistent or wrong.
+
+**Investigation:** The problem occurred across multiple versions of the picker while the downstream shift script behaved correctly with valid dates.
+
+**Current status:** Treated as a frontend component defect rather than a calendar-service defect. The workflow remains usable, but the picker label is not fully trustworthy after month navigation.
+
+### Per-shift deletion remains incomplete
+
+The next planned improvement is a delete control beside each displayed shift. The implementation must identify both the detailed event and its corresponding all-day display event. This remains planned rather than completed.
 
 ## Work Week Dashboard Controls
 
-### Problem
+Default editing and refresh buttons visually competed with the schedule. They were replaced with the slimmer action pattern used elsewhere in the family dashboard.
 
-Default action buttons for editing and refreshing the schedule were too large and visually competed with the schedule itself.
-
-### Resolution
-
-Reworked the lower actions into the slimmer button pattern used by other dashboard tabs while preserving the existing navigation paths and entity targets.
-
-### Lesson
-
-Functional consistency includes visual weight. Primary navigation and secondary actions should not look equally important.
+The calendar editing path and refresh entity targets were preserved rather than replaced with placeholders during styling changes.
 
 ## Donetick Recurring Chore Creation
 
-### Requirement
+### Integration visibility did not provide the full creation workflow
 
-Create assigned, recurring chores directly from Home Assistant.
+**Problem:** The Donetick integration exposed chore data but did not provide the required assigned recurring-task creation flow.
 
-### Initial Problem
+**Resolution:** Added a Home Assistant REST command and script-based workflow using dashboard input helpers.
 
-The Donetick integration exposed chore data but did not provide the complete dashboard-driven recurrence creation workflow.
+### Chores were recurring but not rolling
 
-### Investigation
+**Problem:** A chore could be created successfully while its next due date remained tied to a fixed schedule rather than advancing from completion.
 
-1. Verified that Donetick was reachable from Home Assistant.
-2. Tested task creation through the Donetick API.
-3. Identified the payload fields needed for recurrence and assignment.
-4. Moved API details behind Home Assistant scripts so household users would not interact with raw requests.
-5. Separated daily and weekly workflows to make behavior easier to validate.
+**Resolution:** Added the explicit Donetick payload field:
 
-### Resolution
-
-Implemented a Home Assistant REST command and script-based workflow using dashboard input helpers.
-
-### Result
-
-Users can create daily and weekly chores, assign them, and see them through the Donetick integration without leaving Home Assistant.
-
-### Lesson
-
-An integration can provide useful entity visibility without covering every operational workflow. A small API bridge can fill that gap while preserving one source of truth.
-
-## Chore Dashboard Input State
-
-### Problem
-
-Home Assistant input helpers retain their values. Without cleanup, an old chore name or assignee could remain selected for the next entry.
-
-### Resolution
-
-Added post-submission helper resets and visible confirmation after successful requests.
-
-### Result
-
-Each new chore entry begins from a predictable state.
-
-## Todo Card Header Styling
-
-### Requirement
-
-Hide the built-in `Active` label without hiding the chore names.
-
-### Initial Problem
-
-A broad Card Mod CSS selector hid both the unwanted header and the individual chore titles.
-
-### Investigation
-
-1. Confirmed Card Mod was functioning with a visible border test.
-2. Narrowed the problem to heading-level selectors.
-3. Determined that the section label was rendered as `h2` while chore names used a different heading level.
-
-### Resolution
-
-Targeted only:
-
-```css
-ha-card h2
+```json
+"isRolling": true
 ```
 
-and avoided broad `h3` or generic header selectors.
+**Result:** New chores created through the Home Assistant workflow use completion-based rolling recurrence.
 
-### Result
+**Caution:** Existing chores may retain older behavior. Editing an old chore can cause Donetick to rewrite its current settings, but older chores should be verified individually rather than assumed migrated.
 
-The `Active` label is hidden while chore names remain visible.
+### Chore description and payload edits
 
-### Lesson
+The REST payload preserves the chore name, HTML description, recurrence type, frequency, due date, assignee, rolling state, and active state. Small edits to the script affect newly created chores; they do not automatically rewrite every existing Donetick record.
 
-When modifying frontend components, first prove that the styling mechanism works, then narrow selectors against the actual rendered structure.
+### Integration refresh delay
 
-## Bold Chore Names
+A newly created chore may not appear in Home Assistant immediately because the custom integration refreshes on its own interval.
 
-### Problem
+**Resolution:** Keep immediate submission feedback in Home Assistant and allow the integration time to refresh before treating the request as failed.
 
-Increasing font weight on the outer card and common heading elements produced no visible change to individual chore names.
+### Helper state persisted between entries
 
-### Investigation
+Home Assistant input helpers retained old names and assignees. The scripts now reset relevant helpers after successful submission.
 
-The todo-list card renders item content inside nested component structure. Styling the card shell did not reach the actual summary text.
+### Built-in todo controls bypassed recurrence logic
 
-### Resolution
+The default todo `Add item` interface was hidden so new chores consistently use the Donetick-backed workflow.
 
-Used Card Mod to target the nested todo item summary element rather than applying a broad font rule to the entire card.
+### Card Mod styling hid the wrong elements
 
-### Result
+A broad selector intended to remove the `Active` heading also hid chore names. The styling was narrowed to the correct rendered heading, and the nested summary element was targeted separately to bold each chore name.
 
-Each chore name is easier to scan while checkboxes, completion behavior, and surrounding labels remain unchanged.
+### Person assignment is not native to todo entities
 
-### Lesson
+Standard Home Assistant todo items do not contain a native relationship to `person` entities. Donetick user IDs remain authoritative for chore assignment. Personal todo lists are associated with people by configuration and naming, not item-level metadata.
 
-A CSS rule can be valid and still have no effect when a web component's internal rendering boundary is not being targeted.
+This matters for Hermes: it can maintain an application mapping but should not claim the underlying entity provides ownership data that is not present.
 
-## Built-In Todo Add Item Interface
+## Family Dashboard and Mobile Layout
 
-### Problem
+### Landing page looked like a configuration screen
 
-The default todo add-item controls allowed users to create entries that bypassed the custom assignment and recurrence workflow.
+The original page was reworked into a dedicated household entry point with clearer hierarchy, large destination cards, and less instructional text.
 
-### Resolution
+### Navigation paths were guessed incorrectly
 
-Hid the built-in add-item interface and made the custom chore creation controls the only normal entry path.
+Visible dashboard titles did not always match their actual Lovelace routes. Each destination was opened directly and its working path was used in the navigation action.
 
-### Result
+### Edge-to-edge mobile calendar experiments regressed landscape mode
 
-New chores consistently use the intended Donetick-backed workflow.
+**Problem:** Attempts to remove phone side margins could appear to work during refresh but then shrink back, shift the landscape card left, or interfere with surrounding layout behavior.
 
-## Person Assignment and Todo Entities
+**Resolution:** Reverted to the last stable configuration rather than keeping brittle hard-coded offsets.
 
-### Problem
+**Lesson:** A mobile change is not successful when it improves portrait mode but breaks landscape or kiosk navigation.
 
-Home Assistant `person` entities and standard todo entities do not provide a native item-level assignment relationship. Placing separate lists under Joe and Samantha creates a clear user interface, but it does not add person metadata to the items themselves.
+### Kiosk mode was affected by unrelated layout changes
 
-### Resolution
+Margin and shell styling became entangled with header and sidebar behavior.
 
-Kept Donetick's assignee IDs as the source of truth for chores. Personal todo lists remain separate entities whose ownership is established by configuration and naming rather than a built-in Home Assistant assignment field.
+**Resolution:** Kept kiosk mode explicit and separate from card sizing experiments.
 
-### Future Impact
+### Hard-coded custom-card controls resisted styling
 
-The future Hermes or House Brain layer can map known list entities to household members, but it must treat that mapping as application logic. It should not assume the underlying todo item contains person ownership data.
+Attempts to replace the calendar `+` control with `Add Event` did not work because the control is rendered internally by the custom card.
 
-### Lesson
+**Resolution:** Kept the stable built-in control and avoided fragile DOM manipulation.
 
-Visual organization and backend data relationships are not the same thing. Agent integrations should consume authoritative metadata rather than infer ownership only from where an item is displayed.
+### Theme appeared ineffective
 
-## Family Dashboard Visual Design
-
-### Initial Problem
-
-The Home Assistant landing page was functional but looked like a collection of default controls rather than the main page of a family application.
-
-### Resolution
-
-Reworked the page around stronger visual hierarchy, full-width section usage, clear destination cards, and consistent household-focused navigation.
-
-### Additional Refinement
-
-Removed unnecessary explanatory text from live cards and kept technical documentation in the repository instead.
-
-### Lesson
-
-Operational dashboards are more useful when the interface prioritizes decisions and actions while documentation carries the implementation detail.
-
-## Dashboard Navigation Paths
-
-### Problem
-
-Some navigation buttons opened the wrong location or stopped working after a dashboard was renamed or reorganized. The title shown in Home Assistant did not guarantee the expected URL path.
-
-### Investigation
-
-Directly opened each target dashboard, copied the working path, and compared it with the path used in the button action.
-
-### Resolution
-
-Updated navigation actions to use the verified paths for Work Week, Todo Lists, Shopping, Calendar, and Overview.
-
-### Result
-
-The family splash page now acts as a reliable launcher instead of depending on guessed Lovelace routes.
-
-### Lesson
-
-Treat dashboard paths as configuration values that must be verified, not automatically derived from display names.
-
-## Theme Configuration Appeared Ineffective
-
-### Problem
-
-Installing or creating a theme file did not immediately change the dashboard, making the theme appear broken.
-
-### Investigation
-
-Confirmed that Home Assistant must load the themes directory through configuration and that a theme must then be selected for the active profile or dashboard.
-
-### Resolution
-
-Enabled the themes directory, reloaded or restarted Home Assistant, and explicitly applied the selected Catppuccin Latte/Rosewater-inspired theme.
-
-### Lesson
-
-A correct theme definition can appear nonfunctional when the resource-loading and selection steps are incomplete.
-
-## Responsive Calendar Header
-
-### Problem
-
-Calendar header adjustments that looked better in landscape could make portrait mode worse, and fixes for portrait could crowd or misalign controls in landscape.
-
-### Investigation
-
-Compared screenshots from both orientations after each YAML and Card Mod change. The issue was not one universal mobile layout but two width regimes with different wrapping behavior.
-
-### Resolution
-
-Used responsive styling and retained the layout that behaved acceptably in both orientations rather than optimizing only the latest screenshot.
-
-### Result
-
-The calendar remains usable vertically and horizontally, although some custom-card controls still impose layout limits.
-
-### Lesson
-
-Responsive dashboard work requires regression testing across orientations. A change is not an improvement when it merely moves the defect to another viewport.
-
-## Hard-Coded Calendar Controls
-
-### Problem
-
-Attempts to replace the calendar's `+` control with an `Add Event` text label did not work. Similar attempts to move the month-view selector risked breaking alignment.
-
-### Investigation
-
-The visible controls were generated internally by the custom calendar card rather than exposed as normal Home Assistant button cards.
-
-### Resolution
-
-Kept the stable built-in control and avoided fragile DOM manipulation that could break after a card update.
-
-### Lesson
-
-Custom cards define their own customization boundary. Not every visible element is safely configurable through Lovelace YAML or Card Mod.
+The theme file existed but was not loaded and selected. The themes directory was added to Home Assistant configuration, Home Assistant was reloaded or restarted, and the theme was explicitly applied.
 
 ## Calendar Synchronization Delay
 
-### Observation
+An event added to Google Calendar from an email did not appear in Home Assistant immediately but arrived after the integration refreshed.
 
-An event added to Google Calendar from an email did not appear in Home Assistant immediately, but it arrived after the integration refreshed.
+**Lesson:** Before changing a working calendar integration, allow for polling delay and verify the source calendar.
 
-### Conclusion
+## Hermes Architecture Decisions
 
-The event path was working; the apparent failure was a normal synchronization delay rather than a broken calendar mapping.
+### Do not make Hermes a second source of truth
 
-### Lesson
+Home Assistant remains authoritative for calendars, chores, lists, people, devices, and services. Hermes will interpret, summarize, and coordinate across that data.
 
-Before changing a working integration, allow for polling or refresh delay and verify the source calendar directly.
+### Keep Hermes outside Home Assistant OS
 
-## Calendar View Simplification
+Hermes will run as a separate Docker application on the Debian VM. This isolates AI experimentation from the household automation platform.
 
-### Problem
+### Start read-only
 
-Some calendar view modes are not useful for the shared household display and may introduce confusion.
+The first integration phase will use a dedicated Home Assistant user and long-lived token. Secrets will be kept in an untracked `.env` file.
 
-### Current Status
+### Do not expose every service to the model
 
-The household workflow now enters through a purpose-built calendar dashboard. Completely hiding internal view options remains dependent on the capabilities of the custom calendar card.
+A curated adapter will provide only the data and approved actions required for supported workflows. Broad API capability is not the same as safe model capability.
 
-This remains an open refinement rather than a completed feature.
+### First feature: household hero summary
+
+The first visible Hermes feature will be a cozy, reassuring summary at the top of the Home dashboard. It should refresh on a reasonable schedule and after important source changes, such as completion of a chore it mentioned, rather than regenerating continuously.
 
 ## Overall Engineering Lessons
 
-- Real household feedback revealed requirements that were not obvious during initial implementation.
-- Correct source data and good visual presentation sometimes require separate entities.
-- UI simplification should not weaken the underlying data model.
-- Small CSS changes should be tested incrementally against rendered component structure.
-- Integrations often need script or API glue to support a complete user workflow.
-- Responsive UI changes require testing across multiple viewport shapes.
-- Custom-card internals place practical limits on safe Lovelace customization.
+- Real household feedback revealed requirements that were not obvious during implementation.
+- Correct source data and good presentation sometimes require separate entities.
+- Multi-layer Home Assistant failures should be isolated at the popup, helper, script, and integration levels.
+- A custom component can impose upstream defects or customization limits that YAML cannot safely fix.
+- Responsive changes require portrait and landscape regression testing.
+- Integrations often need API glue to support a complete user workflow.
+- Existing backend records do not automatically inherit changes made to creation scripts.
 - Visual grouping should not be mistaken for authoritative assignment metadata.
-- Public documentation should record failed assumptions and design changes, not only the final configuration.
+- AI integrations should begin with narrow read access and explicit responsibility boundaries.
+- Public documentation should record failed assumptions, reversions, and incomplete work rather than only final configurations.
