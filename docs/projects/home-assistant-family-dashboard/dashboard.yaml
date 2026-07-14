@@ -1,0 +1,86 @@
+# Sanitized Lovelace example for the household landing page.
+# Replace navigation paths and entity IDs with the values from the live instance.
+
+kiosk_mode:
+  hide_header: true
+  hide_sidebar: true
+
+views:
+  - title: Home
+    path: welcome
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        column_span: 4
+        cards:
+          - type: markdown
+            content: |
+              # Family Dashboard
+
+              Welcome home.
+            layout_options:
+              grid_columns: full
+              grid_rows: auto
+
+          - type: markdown
+            content: |
+              {{ states('input_text.hermes_household_summary') }}
+            title: Household Note
+            layout_options:
+              grid_columns: full
+              grid_rows: auto
+
+          - type: button
+            name: Family Calendar
+            icon: mdi:calendar-month
+            tap_action:
+              action: navigate
+              navigation_path: /family-calendar/overview
+            layout_options:
+              grid_columns: 2
+
+          - type: button
+            name: Chores
+            icon: mdi:broom
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-chores/0
+            layout_options:
+              grid_columns: 2
+
+          - type: button
+            name: Work Week
+            icon: mdi:briefcase-clock
+            tap_action:
+              action: navigate
+              navigation_path: /work-week/0
+            layout_options:
+              grid_columns: 2
+
+          - type: button
+            name: To-Do Lists
+            icon: mdi:format-list-checks
+            tap_action:
+              action: navigate
+              navigation_path: /to-do-list/todo
+            layout_options:
+              grid_columns: 2
+
+          - type: button
+            name: Shopping
+            icon: mdi:cart-outline
+            tap_action:
+              action: navigate
+              navigation_path: /dashboard-shopping/0
+            layout_options:
+              grid_columns: 2
+
+          - type: button
+            name: Overview
+            icon: mdi:home-assistant
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace/0
+            layout_options:
+              grid_columns: 2
