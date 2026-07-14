@@ -1,0 +1,59 @@
+# Sanitized dashboard excerpt for per-person Donetick-backed chore lists.
+# The built-in add-item path is hidden because recurring chores are created
+# through the dedicated REST/script workflow.
+
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      # Joe's Chores
+    card_mod:
+      style:
+        ha-markdown$: |
+          h1 {
+            font-size: 1.35rem !important;
+            font-weight: 800 !important;
+            margin: 0 !important;
+            padding: 0 0 8px 0 !important;
+            border-bottom: 2px solid rgba(var(--rgb-primary-color), 0.55) !important;
+          }
+
+  - type: todo-list
+    entity: todo.joe_s_tasks
+    hide_create: true
+    card_mod:
+      style:
+        ha-check-list-item$: |
+          .summary {
+            font-weight: 700 !important;
+          }
+
+  - type: markdown
+    content: |
+      # Samantha's Chores
+    card_mod:
+      style:
+        ha-markdown$: |
+          h1 {
+            font-size: 1.35rem !important;
+            font-weight: 800 !important;
+            margin: 0 !important;
+            padding: 0 0 8px 0 !important;
+            border-bottom: 2px solid rgba(var(--rgb-primary-color), 0.55) !important;
+          }
+
+  - type: todo-list
+    entity: todo.samantha_s_tasks
+    hide_create: true
+    card_mod:
+      style:
+        ha-check-list-item$: |
+          .summary {
+            font-weight: 700 !important;
+          }
+
+  - type: markdown
+    content: |
+      ## Completed Today
+
+      {{ states('sensor.donetick_completed_today') }}
