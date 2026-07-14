@@ -1,0 +1,51 @@
+# Sanitized script examples for recurring chores.
+# Assignee IDs are placeholders; Donetick remains authoritative for ownership.
+
+add_daily_chore:
+  alias: Add Daily Chore
+  mode: single
+  fields:
+    chore_name:
+      required: true
+    description:
+      required: false
+    assignee_id:
+      required: true
+  sequence:
+    - variables:
+        cutoff_hour: 21
+        calculated_due_date: >-
+          {% set today = now().date() %}
+          {{ (today + timedelta(days=1 if now().hour >= cutoff_hour else 0)).isoformat() }}
+    - action: rest_command.donetick_create_recurring_chore
+      data:
+        chore_name: "{{ chore_name }}"
+        description: "{{ description | default('Created from Home Assistant') }}"
+        frequency_type: daily
+        frequency: 1
+        due_date: "{{ calculated_due_date }}"
+        assignee_id: "{{ assignee_id }}"
+
+submit_daily_chore_from_dashboard:
+  alias: Submit Daily Chore From Dashboard
+  mode: single
+  sequence:
+    - condition: template
+      value_template: "{{ states('input_text.new_chore_name') | trim != '' }}"
+    - action: script.add_daily_chore
+      data:
+        chore_name: "{{ states('input_text.new_chore_name') | trim }}"
+        description: "{{ states('input_text.new_chore_description') | trim }}"
+        assignee_id: >-
+          {{ 1 if is_state('input_select.new_chore_assignee', 'Person A') else 2 }}
+    - action: input_text.set_value
+      target:
+        entity_id:
+          - input_text.new_chore_name
+          - input_text.new_chore_description
+      data:
+        value: ""
+    - action: persistent_notification.create
+      data:
+        title: Chore submitted
+        message: The chore was sent to Donetick and may take a short time to appear.
