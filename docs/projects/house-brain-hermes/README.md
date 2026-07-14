@@ -53,7 +53,7 @@ The summary should update on a reasonable interval and after material source cha
 3. Verify read-only API access from Debian.
 4. Build a narrow household-context adapter.
 5. Generate a typed calendar summary.
-6. publish it to a Home Assistant entity or helper.
+6. Publish it to a Home Assistant entity or helper.
 7. Display it on the Home dashboard.
 8. Add controlled event-driven refreshes.
 
