@@ -1,23 +1,63 @@
-alias: Add Samantha Shift
-mode: single
-sequence:
-  - action: calendar.create_event
-    target:
-      entity_id: calendar.samantha_work
-    data:
-      summary: "Samantha Work - {{ states('input_select.samantha_shift_location') }}"
-      description: >
-        Added from the Home Assistant Work Week tab.
-        {% set notes = states('input_text.samantha_shift_notes') %}
-        {% if notes not in ['unknown', 'unavailable', '', ' '] %}
-        Notes: {{ notes }}
-        {% endif %}
-      start_date_time: "{{ states('input_datetime.samantha_shift_start') }}"
-      end_date_time: "{{ states('input_datetime.samantha_shift_end') }}"
+# Sanitized example of the confirmed shift-creation workflow.
+# The dashboard gathers values first. Browser Mod shows the confirmation
+# popup; this script performs the calendar writes after confirmation.
 
-  - delay:
-      seconds: 2
+add_samantha_shift:
+  alias: Add Samantha Shift
+  mode: single
+  sequence:
+    - variables:
+        shift_date: "{{ states('input_datetime.samantha_shift_date') }}"
+        start_time: "{{ states('input_datetime.samantha_shift_start_time') }}"
+        end_time: "{{ states('input_datetime.samantha_shift_end_time') }}"
+        location: "{{ states('input_select.samantha_shift_location') }}"
+        notes: "{{ states('input_text.samantha_shift_notes') }}"
+        start_value: "{{ shift_date ~ ' ' ~ start_time }}"
+        end_date: >-
+          {% if end_time <= start_time %}
+            {{ (as_datetime(shift_date) + timedelta(days=1)).date() }}
+          {% else %}
+            {{ shift_date }}
+          {% endif %}
+        end_value: "{{ end_date ~ ' ' ~ end_time }}"
+        display_end_date: >-
+          {{ (as_datetime(shift_date) + timedelta(days=1)).date() }}
 
-  - action: input_button.press
-    target:
-      entity_id: input_button.work_week_refresh
+    - action: calendar.create_event
+      target:
+        entity_id: calendar.samantha_work
+      data:
+        summary: "Samantha Work - {{ location }}"
+        description: >-
+          Added from the Home Assistant Work Week dashboard.
+          {% if notes not in ['', 'unknown', 'unavailable'] %}
+          Notes: {{ notes }}
+          {% endif %}
+        start_date_time: "{{ start_value }}"
+        end_date_time: "{{ end_value }}"
+
+    - action: calendar.create_event
+      target:
+        entity_id: calendar.samantha_work_display
+      data:
+        summary: Sam Works
+        start_date: "{{ shift_date }}"
+        end_date: "{{ display_end_date }}"
+
+    - action: input_button.press
+      target:
+        entity_id: input_button.work_week_refresh
+
+    - action: input_datetime.set_datetime
+      target:
+        entity_id:
+          - input_datetime.samantha_shift_start_time
+          - input_datetime.samantha_shift_end_time
+      data:
+        time: "00:00:00"
+
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.samantha_shift_notes
+      data:
+        value: ""

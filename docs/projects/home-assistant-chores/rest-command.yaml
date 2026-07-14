@@ -1,0 +1,32 @@
+# Sanitized Home Assistant REST command example.
+# Keep the real token in secrets.yaml and replace the example URL.
+
+rest_command:
+  donetick_create_recurring_chore:
+    url: "http://DONETICK_HOST:PORT/api/v1/chores"
+    method: POST
+    headers:
+      Authorization: !secret donetick_authorization_header
+      Content-Type: application/json
+    payload: >-
+      {
+        "id": null,
+        "name": {{ chore_name | tojson }},
+        "description": {{ ('<p>' ~ (description | default('Created from Home Assistant')) ~ '</p>') | tojson }},
+        "frequencyType": {{ frequency_type | tojson }},
+        "frequency": {{ frequency | int }},
+        "frequencyMetadata": {},
+        "dueDate": {{ due_date | tojson }},
+        "assignedTo": {{ assignee_id | int }},
+        "assignees": [{"userId": {{ assignee_id | int }}}],
+        "assignStrategy": "least_completed",
+        "isActive": true,
+        "isPrivate": false,
+        "isRolling": true,
+        "labels": [],
+        "labelsV2": [],
+        "notification": false,
+        "notificationMetadata": {},
+        "priority": 0,
+        "requireApproval": false
+      }

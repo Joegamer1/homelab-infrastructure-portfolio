@@ -1,0 +1,43 @@
+# Sanitized helper definitions used by the Work Week dashboard.
+# Entity names can be adjusted to match the production installation.
+
+input_number:
+  work_week_offset:
+    name: Work Week Offset
+    min: -12
+    max: 12
+    step: 1
+    mode: box
+
+input_datetime:
+  samantha_shift_date:
+    name: Shift Date
+    has_date: true
+    has_time: false
+
+  samantha_shift_start_time:
+    name: Start Time
+    has_date: false
+    has_time: true
+
+  samantha_shift_end_time:
+    name: End Time
+    has_date: false
+    has_time: true
+
+input_select:
+  samantha_shift_location:
+    name: Shift Location
+    options:
+      - Primary Location
+      - Secondary Location
+      - Other
+
+input_text:
+  samantha_shift_notes:
+    name: Shift Notes
+    max: 255
+
+input_button:
+  work_week_refresh:
+    name: Refresh Work Week
