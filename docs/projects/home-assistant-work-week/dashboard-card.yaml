@@ -1,3 +1,6 @@
+# Sanitized Work Week card excerpt.
+# Browser Mod is used for the final preview and confirmation step.
+
 type: vertical-stack
 cards:
   - type: markdown
@@ -14,23 +17,72 @@ cards:
 
       {{ state_attr('sensor.samantha_work_week', 'markdown') }}
 
-  - type: markdown
-    content: |
-      ## Add Samantha Shift
-
   - type: entities
+    title: Add Samantha Shift
     entities:
+      - entity: input_datetime.samantha_shift_date
+        name: Shift Date
+      - entity: input_datetime.samantha_shift_start_time
+        name: Start Time
+      - entity: input_datetime.samantha_shift_end_time
+        name: End Time
       - entity: input_select.samantha_shift_location
         name: Location
-      - entity: input_datetime.samantha_shift_start
-        name: Shift Start
-      - entity: input_datetime.samantha_shift_end
-        name: Shift End
       - entity: input_text.samantha_shift_notes
-        name: Optional Shift Notes
+        name: Optional Notes
 
-  - type: tile
-    entity: script.add_samantha_shift
-    name: Add Samantha Shift
-    icon: mdi:calendar-plus
-    hide_state: true
+  - type: button
+    name: Review Shift
+    icon: mdi:calendar-check
+    tap_action:
+      action: fire-dom-event
+      browser_mod:
+        service: browser_mod.popup
+        data:
+          title: Confirm Samantha Shift
+          content:
+            type: vertical-stack
+            cards:
+              - type: markdown
+                content: |
+                  ## Confirm this shift
+
+                  **Date:** {{ states('input_datetime.samantha_shift_date') }}  
+                  **Start:** {{ states('input_datetime.samantha_shift_start_time') }}  
+                  **End:** {{ states('input_datetime.samantha_shift_end_time') }}  
+                  **Location:** {{ states('input_select.samantha_shift_location') }}  
+                  **Notes:** {{ states('input_text.samantha_shift_notes') }}
+
+              - type: horizontal-stack
+                cards:
+                  - type: button
+                    name: Cancel
+                    icon: mdi:close
+                    tap_action:
+                      action: fire-dom-event
+                      browser_mod:
+                        service: browser_mod.close_popup
+
+                  - type: button
+                    name: Add Shift
+                    icon: mdi:check
+                    tap_action:
+                      action: call-service
+                      service: script.add_samantha_shift
+
+  - type: horizontal-stack
+    cards:
+      - type: button
+        name: Add / Edit Events
+        icon: mdi:calendar-plus
+        tap_action:
+          action: navigate
+          navigation_path: /calendar
+
+      - type: button
+        name: Refresh
+        icon: mdi:refresh
+        tap_action:
+          action: press
+          target:
+            entity_id: input_button.work_week_refresh
