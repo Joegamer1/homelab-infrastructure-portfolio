@@ -1,0 +1,23 @@
+# Planning example only. Replace the image and application-specific settings
+# after the Hermes implementation is selected and validated.
+
+services:
+  hermes:
+    image: ${HERMES_IMAGE}
+    container_name: hermes
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOME_ASSISTANT_URL: ${HOME_ASSISTANT_URL}
+      HOME_ASSISTANT_TOKEN: ${HOME_ASSISTANT_TOKEN}
+      HERMES_MODE: read-only
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+    networks:
+      - hermes
+
+networks:
+  hermes:
+    name: hermes
