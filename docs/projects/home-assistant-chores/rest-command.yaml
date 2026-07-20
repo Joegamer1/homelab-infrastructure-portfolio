@@ -1,5 +1,7 @@
 # Sanitized Home Assistant REST command example.
 # Keep the real token in secrets.yaml and replace the example URL.
+# This Donetick API version expects dueDate on creation. Using nextDueDate
+# created rolling chores with no stored due date.
 
 rest_command:
   donetick_create_recurring_chore:
