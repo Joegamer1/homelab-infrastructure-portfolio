@@ -16,7 +16,10 @@ See [`docs/architecture/overview.md`](docs/architecture/overview.md) and [`docs/
 
 ## Projects
 
-- [Plex hardware transcoding](docs/projects/plex-hardware-transcoding/)
+- [Plex Server](docs/projects/plex-server/)
+  - [Media automation](docs/projects/plex-server/media-automation/)
+  - [Subtitle processing](docs/projects/plex-server/subtitle-processing/)
+  - [Hardware transcoding](docs/projects/plex-server/hardware-transcoding/)
 - [Home Assistant family dashboard](docs/projects/home-assistant-family-dashboard/)
 - [Work Week calendar workflow](docs/projects/home-assistant-work-week/)
 - [Donetick chore workflow](docs/projects/home-assistant-chores/)
