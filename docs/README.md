@@ -20,7 +20,10 @@
 
 ## Projects
 
-- [`projects/plex-hardware-transcoding/`](projects/plex-hardware-transcoding/)
+- [`projects/plex-server/`](projects/plex-server/): Plex platform overview
+  - [`projects/plex-server/media-automation/`](projects/plex-server/media-automation/): request, download, import, and playback workflow
+  - [`projects/plex-server/subtitle-processing/`](projects/plex-server/subtitle-processing/): automated subtitle cleanup and Plex analysis
+  - [`projects/plex-server/hardware-transcoding/`](projects/plex-server/hardware-transcoding/): NVIDIA GPU passthrough and Plex hardware acceleration
 - [`projects/home-assistant-family-dashboard/`](projects/home-assistant-family-dashboard/)
 - [`projects/home-assistant-work-week/`](projects/home-assistant-work-week/)
 - [`projects/home-assistant-chores/`](projects/home-assistant-chores/)
