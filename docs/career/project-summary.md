@@ -1,100 +1,34 @@
-# Career Project Summary
+# Project summary for interviews and resumes
 
-This document summarizes the homelab infrastructure project in a way that is useful for resumes, interviews, portfolio reviews, and technical conversations.
+I built and run a Proxmox homelab on a Dell Precision T7820. It hosts Docker services, Home Assistant, media, DNS, monitoring, remote access, and household calendars and chores.
 
-## One-Sentence Summary
+## Decisions I can explain
 
-Built and documented a real home infrastructure environment using Proxmox, Debian Linux, Docker, Home Assistant, Tailscale, monitoring, DNS, backups, and household automation workflows.
+- I put Docker services in a Debian VM so application changes stay separate from the Proxmox host.
+- I gave Home Assistant its own VM because the household uses it, and changes to the media stack shouldn't take it down.
+- I use Tailscale for remote administration to keep management interfaces off the public internet.
+- I inspected running container mounts before writing the backup script. Data was spread across bind mounts, named volumes, `/srv/docker`, and older `/opt/docker` paths.
+- I keep backup creation and restore testing separate in these notes. The script creates archives; a documented restore test is still needed.
 
-## Project Overview
+## Resume bullets
 
-This project documents my personal homelab as a practical infrastructure and operations platform. The environment is built around a Dell Precision T7820 running Proxmox VE, with separate virtual machines for Docker-based services and Home Assistant OS.
+- Built and maintained a Proxmox homelab with separate Debian Docker and Home Assistant VMs.
+- Deployed Portainer, Homepage, Uptime Kuma, Pi-hole, Nginx Proxy Manager, Plex, Donetick, and Tailscale.
+- Configured NVIDIA GPU passthrough through Proxmox, Debian, and Docker for Plex hardware transcoding.
+- Connected Home Assistant to Google Calendar and Donetick for schedules and recurring chores.
+- Documented service dependencies, configuration backups, troubleshooting, and remaining security work.
 
-The project is intentionally documented as a living system rather than a generic lab. It includes what is running, why design choices were made, how services are separated, what operational work has been completed, and what improvements are planned next.
+## Problems worth discussing
 
-## What This Demonstrates
+- Tracing GPU visibility from the Proxmox host through the VM and into Plex
+- Finding the configuration directory a running container actually uses
+- Keeping accurate overnight shift times while showing a single entry on the family calendar
+- Checking Donetick's stored API values when a YAML change didn't affect existing chores
+- Testing remote playback separately from port availability
+- Deferring firewall changes until I have a console recovery path
 
-This project demonstrates hands-on ability in:
+The [troubleshooting history](../operations/historical-build-and-troubleshooting.md) and [recent fixes](../operations/recent-project-troubleshooting.md) have the details.
 
-- Virtualization with Proxmox VE
-- Linux server administration
-- Docker service hosting
-- Internal DNS and service organization
-- Private remote access using Tailscale
-- Service monitoring with Uptime Kuma
-- Backup planning and infrastructure recovery thinking
-- Home Assistant dashboarding and household automation
-- Documentation of real infrastructure decisions
-- Security-conscious planning and incremental hardening
+## Still to do
 
-## Key Design Decisions
-
-### Proxmox as the Virtualization Layer
-
-Proxmox is used as the base platform so major workloads can be separated into virtual machines. This keeps the environment easier to understand, troubleshoot, and expand.
-
-### Debian Docker VM for Services
-
-Most containerized services run inside a dedicated Debian VM instead of directly on the Proxmox host. This keeps the host focused on virtualization and gives Docker services their own operational boundary.
-
-### Home Assistant as a Separate VM
-
-Home Assistant runs separately because it acts more like a household operations platform than a normal containerized service. Isolating it makes maintenance cleaner and reduces the chance that unrelated Docker changes affect household dashboards or automations.
-
-### Private Remote Access First
-
-Tailscale is used for private remote access so administrative services do not need to be exposed directly to the public internet.
-
-## Current Services and Workflows
-
-The environment currently includes:
-
-- Proxmox VE virtualization
-- Debian Docker service host
-- Portainer for Docker visibility
-- Homepage for service navigation
-- Uptime Kuma for monitoring
-- Pi-hole for DNS and filtering
-- Nginx Proxy Manager for reverse proxy management
-- Tailscale for private access
-- Plex and media automation services
-- Home Assistant OS for household dashboards and automation
-- Google Calendar integration
-- Donetick-backed chore workflows
-
-## Resume-Friendly Bullet Options
-
-- Built and maintained a Proxmox-based homelab hosting Docker services, Home Assistant, monitoring, DNS, remote access, and backup workflows.
-- Designed a segmented home infrastructure environment using separate VMs for Docker services and Home Assistant to improve maintainability and reduce service coupling.
-- Deployed and documented self-hosted services including Portainer, Homepage, Uptime Kuma, Pi-hole, Nginx Proxy Manager, Plex, Donetick, and Tailscale.
-- Integrated Home Assistant with Google Calendar and Donetick to support household scheduling, dashboarding, and recurring chore workflows.
-- Created portfolio-grade documentation covering architecture, service roles, backup planning, security posture, maintenance notes, and planned hardening work.
-
-## Interview Talking Points
-
-Good topics to discuss from this project:
-
-- Why I separated Home Assistant from the general Docker stack
-- How Tailscale changes the remote access threat model
-- What I chose to document publicly versus keep private
-- How I think about backup planning and restore testing
-- How monitoring helps operate even a small home environment
-- How household automation turned the lab into something people actually use
-- What security hardening is complete and what still needs work
-
-## Current Improvement Roadmap
-
-Planned improvements include:
-
-- UFW/firewall hardening
-- Restore testing from backups
-- More architecture diagrams
-- Improved monitoring and alerting
-- Better recovery documentation
-- Continued Home Assistant workflow refinement
-- House Brain/Hermes local AI assistant layer
-- Future dedicated cybersecurity lab built on top of this infrastructure
-
-## Positioning
-
-This project is strongest when presented as practical infrastructure ownership. It is not just a list of tools. It shows that I can build, operate, document, troubleshoot, and improve systems that have real users and real workflows.
+Restore testing, host firewall rules, improved monitoring and alerting, service recovery notes, and the read-only Hermes integration are unfinished. A separate cybersecurity lab for detection and incident work is also planned.

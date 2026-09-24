@@ -1,48 +1,41 @@
-# Homelab Infrastructure Portfolio
+# My homelab
 
-This repository documents the homelab and household infrastructure I operate on a Dell Precision T7820 running Proxmox VE.
+I run my homelab on a Dell Precision T7820 with Proxmox VE. Most services live in a Debian Docker VM, with Home Assistant OS in its own VM.
 
-The environment includes a Debian Docker host, Home Assistant OS, private remote access, monitoring, DNS, media services, recurring household workflows, backups, and a planned AI coordination layer. The documentation focuses on design decisions, troubleshooting, validation, and lessons from operating systems that other people rely on.
+It hosts our media server, DNS, monitoring, calendars, chores, and other household tools. This repo is where I keep the setup notes, configuration examples, fixes, and unfinished work.
 
-## Architecture
+## Setup
 
-- **Proxmox VE** provides virtualization and workload isolation.
-- **Debian** hosts Docker-based infrastructure, media, monitoring, and household services.
-- **Home Assistant OS** runs separately as the household operations platform.
-- **Tailscale** provides private administrative access.
-- **Hermes** is planned as a separate, initially read-only AI coordination layer.
+- **Proxmox VE:** runs the VMs.
+- **Debian:** hosts Docker services for media, DNS, monitoring, and household tools.
+- **Home Assistant OS:** runs the dashboards and automations in a separate VM.
+- **Tailscale:** gives me private remote access for administration.
+- **Hermes:** a planned AI assistant for household summaries, starting with read-only access.
 
-See [`docs/architecture/overview.md`](docs/architecture/overview.md) and [`docs/architecture/service-map.md`](docs/architecture/service-map.md).
+See the [architecture overview](docs/architecture/overview.md) and [service map](docs/architecture/service-map.md).
 
 ## Projects
 
-- [Plex Server](docs/projects/plex-server/)
-  - [Media automation](docs/projects/plex-server/media-automation/)
-  - [Subtitle processing](docs/projects/plex-server/subtitle-processing/)
-  - [Hardware transcoding](docs/projects/plex-server/hardware-transcoding/)
+- [Plex server](docs/projects/plex-server/): [media automation](docs/projects/plex-server/media-automation/), [subtitle processing](docs/projects/plex-server/subtitle-processing/), and [hardware transcoding](docs/projects/plex-server/hardware-transcoding/)
 - [Home Assistant family dashboard](docs/projects/home-assistant-family-dashboard/)
-- [Work Week calendar workflow](docs/projects/home-assistant-work-week/)
-- [Donetick chore workflow](docs/projects/home-assistant-chores/)
+- [Work Week calendar](docs/projects/home-assistant-work-week/)
+- [Donetick chores](docs/projects/home-assistant-chores/)
 - [Homepage dashboard](docs/projects/homepage-dashboard/)
-- [Hermes house brain](docs/projects/house-brain-hermes/)
+- [Hermes plans](docs/projects/house-brain-hermes/)
 
-Each project folder contains the implementation notes and sanitized configuration examples specific to that system.
+## Running and fixing it
 
-## Operations and Security
-
-- [Project evolution](docs/operations/project-evolution.md)
-- [Historical troubleshooting](docs/operations/historical-build-and-troubleshooting.md)
+- [How the setup changed over time](docs/operations/project-evolution.md)
+- [Earlier troubleshooting](docs/operations/historical-build-and-troubleshooting.md)
 - [Recent troubleshooting](docs/operations/recent-project-troubleshooting.md)
 - [Backup plan](docs/operations/backup-plan.md)
 - [Restore notes](docs/operations/restore-notes.md)
-- [Security model](docs/security/security-model.md)
+- [Security settings and remaining work](docs/security/security-model.md)
 
-## Current State
+The core services, calendars, and chore workflows are running. Restore testing, firewall work, better monitoring, per-shift calendar deletion, more recurrence options for chores, and Hermes are still on the list.
 
-The core virtualization, Docker, media, monitoring, DNS, remote-access, Home Assistant, calendar, and chore workflows are operational. Current priorities are restore testing, stronger firewall and monitoring controls, per-shift calendar deletion, additional chore recurrence options, and the read-only Hermes integration.
+## Public examples
 
-## Documentation Boundaries
+The examples use placeholders for credentials, addresses, and household data. They're here to explain the setup without publishing my private configuration.
 
-Public examples are sanitized. They exclude credentials, private keys, tokens, personal calendar data, sensitive household details, and unnecessary internal addressing.
-
-Start with the [documentation index](docs/README.md).
+The [documentation index](docs/README.md) lists the rest of the notes.

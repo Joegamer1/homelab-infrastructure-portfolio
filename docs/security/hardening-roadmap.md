@@ -1,8 +1,6 @@
 # Hardening Roadmap
 
-This document tracks planned and completed security hardening work for the homelab.
-
-The point of this roadmap is to be honest about the current state. Completed work should stay separate from planned work so the documentation remains useful and credible.
+These are the security changes I have made and the work still ahead.
 
 ## Completed
 
@@ -30,7 +28,7 @@ Plex remote access has been used publicly. Other administrative interfaces shoul
 
 ### UFW Firewall Baseline
 
-UFW/firewall hardening is planned but should not be described as completed until implemented and tested.
+I haven't implemented and tested the host firewall rules yet.
 
 Planned baseline:
 
@@ -83,6 +81,4 @@ Planned documentation practices:
 - Avoid posting sensitive screenshots
 - Document why security decisions were made, not just what commands were run
 
-## Guiding Principle
-
-The goal is not to pretend this homelab is enterprise-perfect. The goal is to keep improving it in a disciplined way while documenting the actual security posture honestly.
+I update the completed section after testing a change. The remaining items stay on this list until then.

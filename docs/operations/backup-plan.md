@@ -14,7 +14,7 @@ Current targets include:
 - Selected Docker configuration paths
 - Docker container, volume, network, and mount metadata
 
-Persistent data is split across `/srv/docker`, `/opt/docker`, bind mounts, and named volumes. The scope was built by inspecting live container mounts rather than assuming one directory convention.
+Persistent data is split across `/srv/docker`, `/opt/docker`, bind mounts, and named volumes. I checked the running container mounts to decide what to include.
 
 ## Implementation
 
@@ -38,7 +38,7 @@ Still required:
 - VM-level recovery testing
 - Application-specific exports where needed
 
-A backup is not fully proven until it has been restored successfully.
+The restore tests are still pending.
 
 ## Restore Priorities
 
@@ -57,5 +57,5 @@ A controlled restore should verify archive integrity, file ownership, permission
 - Inspect live mounts before writing backup logic.
 - Named volumes are easy to miss.
 - Metadata helps reconstruction but does not replace data backups.
-- Configuration-focused backups provide high value without media-scale storage.
+- Backing up configuration takes much less space than copying the media library.
 - Archive creation and recovery validation are separate milestones.

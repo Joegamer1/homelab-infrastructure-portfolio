@@ -1,6 +1,6 @@
 # Security Model
 
-The security model is based on limited exposure, workload separation, private administration, and recoverable change management.
+I keep management interfaces private, separate the main workloads into VMs, and plan a recovery path before changing access settings.
 
 ## Current Controls
 
@@ -12,13 +12,13 @@ The security model is based on limited exposure, workload separation, private ad
 - Plex is the only service with deliberate public port forwarding.
 - Public documentation is sanitized.
 
-Installed software is not counted as a control unless it is actually configured and validated. Uptime Kuma is availability monitoring, not security monitoring; Nginx Proxy Manager does not protect services that are not routed through it.
+Uptime Kuma checks availability. Nginx Proxy Manager only handles traffic routed through it; installing it does not protect services reached by direct ports.
 
 ## Exposure Policy
 
 Management interfaces such as Proxmox, Portainer, Pi-hole, Nginx Proxy Manager, Home Assistant administration, Uptime Kuma, and the Arr applications remain private.
 
-Public exposure is approved by service need, not convenience. Alternate port numbers are not treated as security controls.
+I review public access per service. Changing a port number does not restrict access.
 
 ## SSH and Firewall Status
 
@@ -44,4 +44,4 @@ Uptime Kuma provides reachability checks. Security telemetry, detection engineer
 - Improve allowed-port and network documentation.
 - Add stronger alerting where operationally useful.
 
-Security changes are operational changes. They require a recovery path and validation, not just an installed package or edited configuration line.
+After an access change, I need to check LAN, Tailscale, SSH, and the affected services before considering it finished.

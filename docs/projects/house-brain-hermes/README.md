@@ -1,10 +1,10 @@
 # House Brain / Hermes
 
-Hermes is the planned AI coordination layer for the Home Assistant environment. It will interpret requests, select context, create summaries, and coordinate approved workflows without replacing Home Assistant as the source of truth.
+I plan to use Hermes to answer questions and summarize information from Home Assistant. Home Assistant will keep the household records and run the automations.
 
 ## Deployment
 
-Hermes will run as a separate Docker application under `/srv/docker/hermes` on the Debian VM. Keeping it outside Home Assistant OS creates a cleaner failure boundary for model, prompt, and application changes.
+Hermes will run as a separate Docker application under `/srv/docker/hermes` on the Debian VM. Keeping it outside Home Assistant OS lets me change the model, prompts, or application without changing Home Assistant OS.
 
 Planning examples:
 
@@ -40,11 +40,11 @@ The first phase is read-only:
 - No broad Home Assistant service catalog given to the model
 - Write actions added individually after authorization and failure behavior are defined
 
-## First Feature: Hero Summary
+## First feature: household summary
 
-The first household-facing feature will be a calm summary at the top of the Home dashboard. It may use important events, work schedules, chores, lists, and meaningful household status.
+The first feature will be a summary at the top of the Home dashboard, using selected events, shifts, chores, lists, and household status.
 
-The summary should update on a reasonable interval and after material source changes, not continuously.
+It should refresh on a schedule and when the information it mentions changes.
 
 ## Initial Milestones
 

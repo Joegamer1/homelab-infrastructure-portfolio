@@ -1,6 +1,6 @@
 # Architecture Overview
 
-The homelab is organized around clear workload boundaries rather than placing every service on one host.
+I run Docker services and Home Assistant in separate VMs on the Proxmox host.
 
 ## Platform Layout
 
@@ -36,7 +36,7 @@ This isolation reduces the chance that Docker, media, or AI experimentation disr
 | Homepage | Navigation and selected status visibility |
 | Hermes | Planned interpretation, summaries, and approved coordination |
 
-Hermes will not become a second household database. Home Assistant remains authoritative, while Hermes receives a curated subset of context through a dedicated account and token. The first phase is read-only, with secrets stored outside Git.
+Hermes will read selected Home Assistant data through a dedicated account and token. Home Assistant keeps the household records. Secrets stay outside Git, and the first phase is read-only.
 
 ## Primary Data Flows
 

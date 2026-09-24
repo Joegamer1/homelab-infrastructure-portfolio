@@ -1,8 +1,6 @@
 # Examples
 
-This directory contains sanitized example configuration files that demonstrate how parts of my homelab are organized and integrated.
-
-These examples are not raw production configs. They are rewritten documentation examples that show structure and intent without exposing private values.
+I use this directory for configuration examples with private values replaced by placeholders.
 
 ## Planned Examples
 
@@ -28,6 +26,4 @@ Example files may use placeholders such as:
 
 ## Notes
 
-The goal of this directory is to show how the environment is structured without publishing raw live configuration.
-
-Where possible, examples should explain why a service is configured a certain way, not just showing the syntax that I used within my environment. 
+Each example should explain the settings and why I use them.

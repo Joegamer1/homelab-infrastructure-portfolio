@@ -1,6 +1,6 @@
 # Plex Server
 
-This project documents the Plex media platform running on the Debian Docker VM in my Proxmox homelab. Plex is one part of a broader automated media workflow rather than a standalone application.
+I run Plex in the Debian Docker VM. Seerr and the Arr stack handle requests and imports before media reaches the Plex library.
 
 ## Current Design
 

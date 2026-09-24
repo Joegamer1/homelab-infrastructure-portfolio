@@ -1,6 +1,6 @@
 # Home Assistant Family Dashboard
 
-This project is the household-facing entry point for calendars, chores, work schedules, personal lists, shopping, and the planned Hermes summary.
+I use this dashboard to put calendars, chores, work schedules, personal lists, and shopping in one place. A Hermes summary is planned.
 
 ## Design Goals
 
@@ -30,9 +30,9 @@ The interface uses a warm Catppuccin Latte/Rosewater-inspired theme, clear card 
 
 Theme files must be loaded through Home Assistant configuration and then selected; creating the file alone does not apply it.
 
-## Hermes Hero Summary
+## Planned Hermes summary
 
-The planned hero card will display a calm household note using selected calendar, chore, list, and household context. It should refresh on a schedule and after meaningful source changes rather than regenerate continuously.
+The planned card will summarize selected calendars, chores, lists, and household status. It should refresh on a schedule and when the information it mentions changes.
 
 The first version is informational. Device and service actions will be introduced separately.
 

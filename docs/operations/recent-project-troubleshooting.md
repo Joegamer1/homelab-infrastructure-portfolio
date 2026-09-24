@@ -1,8 +1,6 @@
 # Recent Project Troubleshooting Log
 
-This document summarizes significant implementation problems encountered during recent Home Assistant household-operations work and the steps used to resolve them.
-
-The purpose is to preserve the reasoning behind the final design. A finished dashboard rarely shows the failed assumptions, rendering limitations, integration gaps, and iterative testing required to make it reliable.
+These are the problems I ran into while working on household calendars, chores, and dashboards, along with the fixes and remaining issues.
 
 ## Work Schedule and Calendar Display
 
@@ -19,7 +17,7 @@ The purpose is to preserve the reasoning behind the final design. A finished das
 
 **Resolution:** Created separate detailed and display calendar entities. The detailed calendar stores exact times; the display calendar receives one all-day entry on the date the shift starts.
 
-**Lesson:** Accurate source data and simplified presentation may require separate models.
+**Note:** The schedule sensor needs exact shift times; the family view needs one entry per shift.
 
 ### Browser Mod popup did not open
 
@@ -64,13 +62,13 @@ The purpose is to preserve the reasoning behind the final design. A finished das
 
 ### Per-shift deletion remains incomplete
 
-The next planned improvement is a delete control beside each displayed shift. The implementation must identify both the detailed event and its corresponding all-day display event. This remains planned rather than completed.
+The next planned improvement is a delete control beside each displayed shift. The implementation must identify both the detailed event and its corresponding all-day display event. I haven't added it yet.
 
 ## Work Week Dashboard Controls
 
 Default editing and refresh buttons visually competed with the schedule. They were replaced with the slimmer action pattern used elsewhere in the family dashboard.
 
-The calendar editing path and refresh entity targets were preserved rather than replaced with placeholders during styling changes.
+The buttons still use the same calendar editing path and refresh entities.
 
 ## Donetick Recurring Chore Creation
 
@@ -178,15 +176,15 @@ The first integration phase will use a dedicated Home Assistant user and long-li
 
 ### Do not expose every service to the model
 
-A curated adapter will provide only the data and approved actions required for supported workflows. Broad API capability is not the same as safe model capability.
+A curated adapter will provide only the data and approved actions required for supported workflows. Only the supported data and actions should be available to the model.
 
-### First feature: household hero summary
+### First feature: household summary
 
-The first visible Hermes feature will be a cozy, reassuring summary at the top of the Home dashboard. It should refresh on a reasonable schedule and after important source changes, such as completion of a chore it mentioned, rather than regenerating continuously.
+I want the first Hermes feature to summarize the day at the top of the Home dashboard. It should refresh on a schedule and when relevant data changes, such as completing a chore mentioned in the summary.
 
-## Overall Engineering Lessons
+## What I check now
 
-- Real household feedback revealed requirements that were not obvious during implementation.
+- Check how the household uses a feature after the first version works.
 - Correct source data and good presentation sometimes require separate entities.
 - Multi-layer Home Assistant failures should be isolated at the popup, helper, script, and integration levels.
 - A custom component can impose upstream defects or customization limits that YAML cannot safely fix.
@@ -195,4 +193,4 @@ The first visible Hermes feature will be a cozy, reassuring summary at the top o
 - Existing backend records do not automatically inherit changes made to creation scripts.
 - Visual grouping should not be mistaken for authoritative assignment metadata.
 - AI integrations should begin with narrow read access and explicit responsibility boundaries.
-- Public documentation should record failed assumptions, reversions, and incomplete work rather than only final configurations.
+- Record failed attempts, reverted changes, and unfinished work alongside the final configuration.

@@ -1,6 +1,6 @@
 # Home Assistant Work Week Dashboard
 
-This project manages household work schedules while keeping detailed shift data separate from simplified family-calendar presentation.
+I use two calendars for work shifts: one with exact times and one for the family dashboard.
 
 ## Calendar Model
 
@@ -12,7 +12,7 @@ Stores exact start and end times, including shifts that cross midnight. Weekly s
 
 Creates one all-day entry, such as `Sam Works`, on the date the shift begins. An overnight shift does not create a second display entry on the following day.
 
-This split allows accurate calculations and clean calendar ribbons without forcing one entity to satisfy both needs.
+The schedule sensors can use exact times while the family calendar shows one entry per shift.
 
 ## Shift Workflow
 

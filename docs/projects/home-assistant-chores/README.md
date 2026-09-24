@@ -1,6 +1,6 @@
 # Home Assistant Chores
 
-This project combines self-hosted Donetick with a Home Assistant interface for creating, assigning, displaying, and completing recurring household chores.
+I use Donetick to store recurring chores and Home Assistant to create, assign, and complete them.
 
 ## Responsibility Split
 
@@ -58,7 +58,7 @@ Existing records do not inherit changes made to Home Assistant creation scripts.
 
 Donetick user IDs are authoritative. Home Assistant person entities and per-person dashboard grouping do not create native ownership metadata on todo items.
 
-This matters for Hermes: it may map known list entities and Donetick assignees to household members, but it must not invent backend relationships that do not exist.
+Hermes will need to map the list entities and Donetick assignee IDs explicitly when it uses this data.
 
 ## Operational Notes
 

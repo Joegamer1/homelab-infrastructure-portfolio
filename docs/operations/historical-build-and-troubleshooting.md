@@ -1,6 +1,6 @@
-# Historical Build and Troubleshooting Narrative
+# Build history and troubleshooting
 
-This document records the iterative work that led to the current homelab. It focuses on problems, tests, failed assumptions, and the reasoning behind the final design rather than presenting the environment as though it appeared fully formed.
+These are my notes from building the lab: what I tried, what failed, and how I checked the fixes.
 
 ## Proxmox Rebuild and Host Foundation
 
@@ -27,7 +27,7 @@ Create a stable virtualization foundation on the Dell Precision T7820 and avoid 
 
 ### Result
 
-The T7820 became a dedicated virtualization platform rather than a mixed-use server. This reduced coupling and made later troubleshooting easier because hypervisor, VM, and application problems had clearer boundaries.
+The T7820 became the dedicated Proxmox host. I could then investigate host, VM, and application problems separately.
 
 ## Debian Docker VM
 
@@ -53,11 +53,11 @@ Create one Linux VM for the majority of containerized services.
 
 ### Result
 
-The Debian VM became the main application platform. The mixed historical paths are documented rather than hidden, and future services can follow the cleaner `/srv/docker/<service>` convention.
+The Debian VM became the main application platform. Older services still use mixed paths. New services use `/srv/docker/<service>`.
 
 ### Lesson
 
-Standardization usually happens after a system begins growing. The important operational step is to inspect and document the real state before moving anything.
+I needed to check the running mounts before moving directories or standardizing paths.
 
 ## Pi-hole and Internal DNS
 
@@ -104,11 +104,11 @@ Provide a manageable reverse-proxy layer for internal services and future contro
 
 ### Result
 
-Nginx Proxy Manager is available as an access layer, but documentation avoids claiming it protects or fronts services that still use direct ports.
+Nginx Proxy Manager is installed. Services still accessed through direct ports do not pass through it.
 
 ### Lesson
 
-Installed is not the same as integrated.
+Each proxy host needs its own configuration and access test.
 
 ## Uptime Kuma
 
@@ -229,7 +229,7 @@ Plex has the required public path while administrative services remain private. 
 
 ### Lesson
 
-Delaying a security control can be the correct decision when applying it without a recovery path creates a larger operational risk. The delay should be documented and revisited, not forgotten.
+I deferred the firewall change until I had console access available to recover from a lockout.
 
 ## Backup Script
 
@@ -255,11 +255,11 @@ Preserve enough configuration and metadata to rebuild important services without
 
 ### Result
 
-The backup script can create configuration-focused archives and operational metadata. Restore testing remains the next required proof step.
+The script creates configuration archives and captures Docker metadata. I still need to test a restore.
 
 ### Lesson
 
-A backup job succeeding proves that a file was written. It does not prove recoverability.
+I need to restore a service from one of these archives before relying on it for recovery.
 
 ## Home Assistant OS Deployment
 
@@ -347,7 +347,7 @@ The first meaningful test remains a calendar-grounded question such as:
 What does tomorrow look like?
 ```
 
-This is intentionally planned work and should not be represented as implemented yet.
+I haven't implemented this yet.
 
 ## Overall Pattern
 
@@ -361,4 +361,4 @@ Across these projects, the recurring troubleshooting method has been:
 6. Separate accurate backend data from user-facing presentation when their needs conflict.
 7. Document incomplete work honestly.
 
-The homelab's strongest portfolio value is not that every component worked immediately. It is that problems were narrowed, tested, corrected, and incorporated into a more maintainable design.
+I keep these notes so I can find the same checks and fixes when a problem comes back.

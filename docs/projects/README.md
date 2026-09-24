@@ -1,6 +1,6 @@
 # Projects
 
-- [`plex-hardware-transcoding/`](plex-hardware-transcoding/) — PCI passthrough, NVIDIA container access, and Plex playback validation
+- [`plex-server/hardware-transcoding/`](plex-server/hardware-transcoding/) — PCI passthrough, NVIDIA container access, and Plex playback validation
 - [`home-assistant-family-dashboard/`](home-assistant-family-dashboard/) — household navigation, responsive layouts, calendar presentation, and the planned Hermes summary
 - [`home-assistant-work-week/`](home-assistant-work-week/) — shift entry, confirmation, overnight handling, and detailed/display calendars
 - [`home-assistant-chores/`](home-assistant-chores/) — Donetick-backed recurring chores, assignment, and completion visibility

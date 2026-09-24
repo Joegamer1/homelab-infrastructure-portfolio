@@ -1,6 +1,6 @@
 # Plex Subtitle Processing
 
-This project standardizes embedded subtitles before media settles into the Plex library. It was added after releases with large subtitle sets created unnecessary client-selection clutter and increased the chance of avoidable playback issues.
+I added subtitle processing because some releases came with large subtitle lists that cluttered playback controls. The script cleans up embedded tracks after import and asks Plex to analyze the file again.
 
 ## Goal
 
@@ -92,9 +92,9 @@ Validation included:
 
 ## Existing Library Upgrade
 
-After the automated import pipeline was proven reliable, the same cleanup process was applied as a small one-time upgrade to the existing Movies and TV libraries.
+After testing new imports, I ran the cleanup on the existing Movies and TV libraries.
 
-Because the library was still small, the files were processed as grouped maintenance runs rather than by building a separate recurring migration service. This brought existing media into alignment with the policy already enforced for new imports.
+The library was small enough to process in grouped maintenance runs. Existing files now follow the same subtitle policy as new imports.
 
 The maintenance run:
 
@@ -104,7 +104,7 @@ The maintenance run:
 - Requested Plex analysis after successful processing.
 - Continued to the next file if one item failed.
 
-This was intentionally not scheduled. Future Radarr and Sonarr imports are already handled automatically.
+This was a one-time run. The import queue handles future files.
 
 ## Design Decisions
 
@@ -124,6 +124,6 @@ This was intentionally not scheduled. Future Radarr and Sonarr imports are alrea
 
 ## Result
 
-Existing and newly imported media now follow the same embedded subtitle policy. The workflow reduces subtitle clutter, keeps the process observable through logs, and removes the need for routine manual cleanup.
+Existing and newly imported media now follow the same embedded subtitle policy. I can check processing and retries in the logs instead of cleaning up each import manually.
 
 [Back to Plex Server](../)

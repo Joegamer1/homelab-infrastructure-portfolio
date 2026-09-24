@@ -10,7 +10,7 @@ Proxmox VE was established on the Dell Precision T7820. The hypervisor was kept 
 
 Portainer, Pi-hole, Nginx Proxy Manager, Uptime Kuma, and Homepage began as individual services. As the stack grew, the operational work shifted toward mount discovery, naming consistency, backups, monitoring, and dependency management.
 
-Key lesson: inspect the running environment rather than trusting assumed paths or tutorial defaults.
+I started checking the running mounts before editing configuration or backup paths.
 
 ## 3. Media and Hardware Acceleration
 
@@ -28,10 +28,10 @@ Home Assistant expanded from an automation tool into the household operations la
 
 ## 6. Design Through Household Feedback
 
-Real use changed several requirements:
+Using the dashboards at home changed a few requirements:
 
 - Overnight shifts needed exact source data but only one family-facing display entry.
-- Chores needed recurring creation, assignment, helper reset, and completion feedback—not visibility alone.
+- Chores needed recurring creation, assignment, helper reset, and completion feedback.
 - Dashboard controls needed to reflect household tasks rather than Home Assistant internals.
 - Mobile changes had to work in both portrait and landscape.
 
@@ -45,9 +45,9 @@ Hermes was defined as a separate reasoning and coordination layer. Home Assistan
 
 - Standardize service paths and container names early.
 - Inventory mounts before writing backup logic.
-- Validate changes at the layer closest to the behavior.
+- Test the failing component directly before changing the surrounding stack.
 - Preserve accurate source data separately from simplified presentation when needed.
-- Treat systems used by other people as production-like services.
+- Plan household service maintenance around the people using it.
 - Record incomplete work honestly, especially restore testing and security hardening.
 
 The current priorities are restore validation, improved firewall and monitoring controls, expanded household workflows, and the initial Hermes integration.
